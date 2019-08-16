@@ -1,0 +1,19 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.  000 00200A  	lda	n
+  2.  001 200000  loop:	cma#	$000	
+  3.  002 4C2009  	jle end
+  4.  003 18200B  	mul result
+  5.  004 04200B  	sta	result ;store value from acc - sta
+  6.  005 00200A  	lda	n
+  7.  006 140001  	sba#	$001 ; subtract from acc using direct memory address
+  8.  007 04200A  	sta	n 
+  9.  008 402001  	jmp loop
+ 10.              
+ 11.  009 FFFFFF  end:	hlt
+ 12.  00A 000005  n:	.word $005
+ 13.  00B 000001  result:	.word $001
+
+                     SYMBOL TABLE CONTENTS
+
+000009 = END             000001 = LOOP            00000A = N               
+00000B = RESULT          

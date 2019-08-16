@@ -1,0 +1,23 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ array_size,4
+  2.              
+  3.  000 000000  	lda# $0
+  4.  001 010000  	ldx# $0
+  5.              
+  6.  002 21200D  loop:	cmx	max
+  7.  003 4D2007  	jgt end
+  8.  004 104009  	ada+ ones
+  9.  005 110001  	adx#	1
+ 10.  006 402002  	jmp loop
+ 11.              
+ 12.  007 04200E  end:	sta result
+ 13.  008 FFFFFF  	hlt
+ 14.              
+ 15.  009 000001  ones:	.blkw array_size,1
+ 16.  00D 000003  max:	.word array_size - 1
+ 17.  00E 000000  result:	.word 0
+
+                     SYMBOL TABLE CONTENTS
+
+000004 = ARRAY_SIZE      000007 = END             000002 = LOOP            
+00000D = MAX             000009 = ONES            00000E = RESULT          
