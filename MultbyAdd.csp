@@ -1,8 +1,10 @@
-	.EQU @,$100
+
 	.EQU zero,0
 	.EQU n_one,-1
 	lda n ; load n into ACC 
-z:	.word
+m:	.word
+n:	.word
+result:	.word
 	cma zero ; compare n to zeros , i.e product == 0
 	jgt result0
 	lda m	; load m into ACC 
@@ -28,8 +30,4 @@ end:	hlt
 ;; have to reset all variables make sure 
 negate:	NEGA
 result0:	sta result ; Store product == 0 into result if n/m == 0
-
 counter:	.word $001	
-m:	.word
-n:	.word
-result:	.word $000
