@@ -2,43 +2,41 @@ LINE ADDR CONTENTS SOURCE LINE
   1.              	.EQU @,$100
   2.              	.EQU zero,0
   3.              	.EQU n_one,-1
-  4.  100 00211B  	lda n ; load n into ACC 
-  5.  101 000000  z:	.word
-  6.  102 202000  	cma zero ; compare n to zeros , i.e product == 0
-  7.  103 4D2118  	jgt result0
-  8.  104 00211A  	lda m	; load m into ACC 
-  9.  105 202000  	cma zero
- 10.  106 4D2118  	jgt result0
- 11.  107 202FFF  	cma n_one
- 12.  108 4D2117  	jgt negate
- 13.  109 04211A  	sta m
- 14.  10A 00211B  	lda n 
- 15.  10B 202FFF  	cma -1
- 16.  10C FFF021  	COMA
- 17.  10D 002119  loop:	lda counter ; load result in for the multiplication process
- 18.  10E 20211B  	cma	n
- 19.  10F 4D2116  	jgt end
- 20.  110 100001  	ada# $001 ; add one to counter
- 21.  111 042119  	sta counter 
- 22.  112 00211C  	lda result
- 23.  113 10211A  	ada m
- 24.  114 04211C  	sta result ; store product so far in result
- 25.  115 40210D  	jmp loop
- 26.  116 FFFFFF  end:	hlt
- 27.              
- 28.              ;; have to reset all variables make sure 
- 29.  117 FFF020  negate:	NEGA
- 30.  118 04211C  result0:	sta result ; Store product == 0 into result if n/m == 0
- 31.              
- 32.  119 000001  counter:	.word $001	
- 33.  11A 000000  m:	.word
- 34.  11B 000000  n:	.word
- 35.  11C 000000  result:	.word $000
- 36.              
+  4.  100 002102  	lda n ; load n into ACC 
+  5.  101 000000  m:	.word
+  6.  102 000000  n:	.word
+  7.  103 000000  result:	.word
+  8.  104 202000  	cma zero ; compare n to zeros , i.e product == 0
+  9.  105 4D211A  	jgt result0
+ 10.  106 002101  	lda m	; load m into ACC 
+ 11.  107 202000  	cma zero
+ 12.  108 4D211A  	jgt result0
+ 13.  109 202FFF  	cma n_one
+ 14.  10A 4D2119  	jgt negate
+ 15.  10B 042101  	sta m
+ 16.  10C 002102  	lda n 
+ 17.  10D 202FFF  	cma -1
+ 18.  10E FFF021  	COMA
+ 19.  10F 00211B  loop:	lda counter ; load result in for the multiplication process
+ 20.  110 202102  	cma	n
+ 21.  111 4D2118  	jgt end
+ 22.  112 100001  	ada# $001 ; add one to counter
+ 23.  113 04211B  	sta counter 
+ 24.  114 002103  	lda result
+ 25.  115 102101  	ada m
+ 26.  116 042103  	sta result ; store product so far in result
+ 27.  117 40210F  	jmp loop
+ 28.  118 FFFFFF  end:	hlt
+ 29.              
+ 30.              ;; have to reset all variables make sure 
+ 31.  119 FFF020  negate:	NEGA
+ 32.  11A 042103  result0:	sta result ; Store product == 0 into result if n/m == 0
+ 33.  11B 000001  counter:	.word $001	
+ 34.              
 
                      SYMBOL TABLE CONTENTS
 
-000119 = COUNTER         000116 = END             00010D = LOOP            
-00011A = M               00011B = N               000117 = NEGATE          
-FFFFFF = N_ONE           00011C = RESULT          000118 = RESULT0         
-000101 = Z               000000 = ZERO            
+00011B = COUNTER         000118 = END             00010F = LOOP            
+000101 = M               000102 = N               000119 = NEGATE          
+FFFFFF = N_ONE           000103 = RESULT          00011A = RESULT0         
+000000 = ZERO            
