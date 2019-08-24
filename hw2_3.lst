@@ -1,0 +1,72 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @,$000
+  2.  000 002100  	lda	$100
+  3.  001 010000  	ldx#	0	;load XR w 0 --start
+  4.  002 000000  	lda#	0
+  5.  003 04202D  	sta i
+  6.  004 04202B  	sta j		; initalize counter var to 0
+  7.  005 04202A  	sta index
+  8.  006 00202D  	lda i
+  9.  007 202064  for_1:	cma length
+ 10.  008 482029  	jeq end_1	; hlt program
+ 11.  009 4A200A  	jlt for_2
+ 12.              
+ 13.  00A 00202B  for_2:	lda j
+ 14.  00B 01202D  	ldx i 
+ 15.  00C 200036  	cma# length - i- 1
+ 16.  00D 4A200F  	jlt if
+ 17.  00E 482026  	jeq inc_i
+ 18.              
+ 19.  00F 01202B  if:	ldx	j
+ 20.  010 110001  	adx#	1
+ 21.  011 05202C  	stx	j_2
+ 22.  012 004065  	lda+ ARRAY
+ 23.  013 04202E  	sta	temp	; temp == 74
+ 24.  014 01202B  	ldx j
+ 25.  015 004065  	lda+	ARRAY	; comp 100 ? 74
+ 26.  016 20002E  	cma#	temp
+ 27.  017 4D2018  	jgt	swap
+ 28.              
+ 29.  018 01202B  swap:	ldx j
+ 30.  019 004065  	lda+ ARRAY
+ 31.  01A 04202E  	sta temp	; temp == 100
+ 32.  01B 01202C  	ldx j_2
+ 33.  01C 004065  	lda+ ARRAY	; ACC:= a[j+1]
+ 34.  01D 01202B  	ldx j		; XR := j
+ 35.  01E 044065  	sta+ ARRAY 	; a[j] = 74
+ 36.  01F 00202E  	lda temp
+ 37.  020 01202C  	ldx j_2
+ 38.  021 044065  	sta+ ARRAY
+ 39.  022 1B202B  	inc j
+ 40.  023 FFF003  	TXA
+ 41.  024 04202B  	sta j
+ 42.  025 40200F  	jmp if
+ 43.              
+ 44.  026 00202D  inc_i:	lda i
+ 45.  027 100001  	ada#	1
+ 46.  028 04202D  	sta i
+ 47.              
+ 48.  029 FFFFFF  end_1:	hlt	
+ 49.              	
+ 50.  02A 000000  index:	.word 0
+ 51.  02B 000000  j:	.word 0
+ 52.  02C 000000  j_2:	.word 0
+ 53.  02D 000000  i:	.word 0
+ 54.  02E 000000  temp:	.word 0
+ 55.              	.equ@,	100
+ 56.  064 000006  length:	.word 6
+ 57.  065 000064  ARRAY:	.word 100
+ 58.  066 00004A  	.word 74
+ 59.  067 FFFF70  	.word -144
+ 60.  068 002726  	.word 10022
+ 61.  069 000291  	.word 657
+ 62.  06A FFFFDF  	.word -33
+ 63.              
+
+                     SYMBOL TABLE CONTENTS
+
+000065 = ARRAY           000029 = END_1           000007 = FOR_1           
+00000A = FOR_2           00002D = I               00000F = IF              
+000026 = INC_I           00002A = INDEX           00002B = J               
+00002C = J_2             000064 = LENGTH          000018 = SWAP            
+00002E = TEMP            

@@ -1,0 +1,52 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @,000
+  2.              	.equ n_size, 6
+  3.              	
+  4.  000 002021  	lda i ;; first for loop 
+  5.  001 200006  for:	cma#	n_size
+  6.  002 4B2011  	jge return ;; return_0 meanign Y is greater than X
+  7.  003 010000  	ldx# 0
+  8.  004 052022  	stx counter
+  9.  005 21201F  if:	cmx max
+ 10.  006 4D2011  	jgt return
+ 11.  007 004013  	lda+ X
+ 12.  008 204019  	cma+ Y
+ 13.  009 4A200F  	jlt comparison
+ 14.  00A 1B2021  	inc i
+ 15.  00B 110001  	adx# 1
+ 16.  00C 402005  	jmp if
+ 17.  00D 000001  	lda# 1
+ 18.  00E FFFFFF  	hlt
+ 19.              	
+ 20.              
+ 21.  00F 000000  comparison:	lda#	0
+ 22.  010 FFFFFF  	hlt	 
+ 23.              
+ 24.  011 000001  return:	lda#	1
+ 25.  012 FFFFFF  	hlt
+ 26.              
+ 27.  013 00005F  X:	.word 95
+ 28.  014 0003EA  	.word 1002
+ 29.  015 0000E9  	.word 233
+ 30.  016 FFFF77  	.word -137
+ 31.  017 0018BC  	.word 6332
+ 32.  018 0081A7  	.word 33191
+ 33.              
+ 34.  019 000023  Y:	.word 35
+ 35.  01A 000066  	.word 102
+ 36.  01B 00006D  	.word 109
+ 37.  01C FFFA9E  	.word	-1378
+ 38.  01D 0018BC  	.word	6332
+ 39.  01E FF7E56  	.word	-33194
+ 40.              
+ 41.  01F 000005  max:	.word	n_size - 1
+ 42.  020 000000  result:	.word 0
+ 43.  021 000000  i: 	.word 0
+ 44.  022 000000  counter:	.word 0
+
+                     SYMBOL TABLE CONTENTS
+
+00000F = COMPARISON      000022 = COUNTER         000001 = FOR             
+000021 = I               000005 = IF              00001F = MAX             
+000006 = N_SIZE          000020 = RESULT          000011 = RETURN          
+000013 = X               000019 = Y               

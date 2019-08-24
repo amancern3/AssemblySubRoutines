@@ -1,21 +1,16 @@
+	.equ zero,0
+	.equ n_one,-1
+	.equ m, $100
+	.equ n, $101
+	.equ result, $102
 
-	.EQU zero,0
-	.EQU n_one,-1
 	lda n ; load n into ACC 
-m:	.word
-n:	.word
-result:	.word
 	cma zero ; compare n to zeros , i.e product == 0
 	jgt result0
 	lda m	; load m into ACC 
 	cma zero
 	jgt result0
-	cma n_one
-	jgt negate
-	sta m
-	lda n 
-	cma -1
-	COMA
+	
 loop:	lda counter ; load result in for the multiplication process
 	cma	n
 	jgt end
