@@ -1,0 +1,17 @@
+	.equ N,3
+	.equ M,3
+	.equ @,$000
+	.equ STACKTOP, $E00
+	.equ AT_address, $E07
+
+	lds#	STACKTOP
+	lds#	N
+	lds#	M
+	lds	AT_address
+	tsf
+	jsr	transpose
+	hlt
+
+matrix:	.blkw	N*M
+AT_adrdress:	.blkw M*N
+

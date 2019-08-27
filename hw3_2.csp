@@ -1,0 +1,34 @@
+	.equ @, $020
+	.equ	N,3
+	.equ	M,3
+		
+	
+transpose:	bgn#	0
+
+	;decode stack information 
+	pshx
+	lda#	0
+	sta i 
+	sta j		; i = j = 0 ready to get transpose	
+
+	ldx	i
+for_i:	cma# ! N-1	
+	jgt end_transp
+	tax
+	ada# ! M-1
+	sta	j_end
+	cmx j_end
+	jgt	end_2
+	
+for_j:	ldx	j
+	cmx	M
+	lda+	matrix	; load the ACC w a[n][m] values and save them in a[m][n] locations 
+	
+transpose_save
+	
+	inc i 
+	jmp for_i
+
+
+i:	.word 0
+j:	.word 0
