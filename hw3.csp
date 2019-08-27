@@ -4,12 +4,16 @@
 	.equ STACKTOP, $E00
 	.equ AT_address, $E07
 
-	lds#	STACKTOP
+	; use CBA method for arrays since only have to pass address of the array to be transposed
+
+	lds#	STACKTOP	;top of stap
+	lds	matrix
 	lds#	N
 	lds#	M
 	lds	AT_address
 	tsf
 	jsr	transpose
+	ads#	2	;destroy stack 
 	hlt
 
 matrix:	.blkw	N*M
