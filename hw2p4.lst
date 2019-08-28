@@ -1,0 +1,69 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ;binary search
+  2.              
+  3.              	.equ @, $000
+  4.              	
+  5.              	.equ target, $100
+  6.              	.equ	length, $101
+  7.              	.equ	sorted, $102	
+  8.              
+  9.              	;; target ACC = 1 if found , else 0 
+ 10.              
+ 11.  000 002101  	lda length
+ 12.  001 140001  	sba#	1
+ 13.  002 04201F  	sta c_length
+ 14.              
+ 15.              
+ 16.  003 000000  	lda#	0	
+ 17.  004 04201E  	sta inital_v
+ 18.  005 00201E  	lda inital_v
+ 19.  006 20201F  loop_1:	cma c_length
+ 20.  007 4D201A  	jgt case_0
+ 21.              
+ 22.  008 10201F  	ada c_length
+ 23.  009 190002  	div#	2
+ 24.  00A 04201F  	sta	c_length
+ 25.              	
+ 26.  00B 01201F  	ldx c_length
+ 27.  00C 004102  	lda+ sorted 	; sorted[c_idx]
+ 28.  00D 202100  	cma target
+ 29.  00E 48201C  	jeq case_1
+ 30.  00F 4A2011  	jlt lesser_than
+ 31.  010 4D2016  	jgt greater_than
+ 32.              
+ 33.  011 00201F  lesser_than:	lda c_length	; lesser case iff tar > arr[c_idx]
+ 34.  012 100001  	ada#	1
+ 35.  013 04201E  	sta inital_v
+ 36.  014 00201E  	lda	inital_v
+ 37.  015 402006  	jmp loop_1
+ 38.              
+ 39.  016 00201F  greater_than:	lda c_length	; greater than case -- ask TA soon !!!!!
+ 40.  017 1C201F  	dec c_length
+ 41.  018 00201E  	lda	inital_v
+ 42.              	
+ 43.  019 402006  	jmp	loop_1
+ 44.              
+ 45.  01A 000000  case_0:	lda#	0
+ 46.  01B FFFFFF  	hlt
+ 47.              
+ 48.  01C 000001  case_1:	lda#	1
+ 49.  01D FFFFFF  	hlt
+ 50.              
+ 51.  01E 000000  inital_v:	.word 0
+ 52.  01F 000000  c_length:	.word 0
+ 53.  020 000000  lim:	.word 0
+ 54.              	
+ 55.              	.equ @,$102
+ 56.  102 000001  	.word 1
+ 57.  103 000002  	.word 2
+ 58.  104 000003  	.word 3
+ 59.  105 000004  	.word 4
+ 60.  106 000005  	.word 5
+ 61.  107 000006  	.word 6
+
+                     SYMBOL TABLE CONTENTS
+
+00001A = CASE_0          00001C = CASE_1          00001F = C_LENGTH        
+000016 = GREATER_THAN    00001E = INITAL_V        000101 = LENGTH          
+000011 = LESSER_THAN     000020 = LIM             000006 = LOOP_1          
+000102 = SORTED          000100 = TARGET          

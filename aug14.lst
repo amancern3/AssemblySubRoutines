@@ -1,0 +1,20 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ max_int, 5
+  2.  000 00200A  	lda counter
+  3.  001 20200C  loop:	cma n
+  4.  002 4D2009  	jgt end
+  5.  003 18200A  	mul counter
+  6.  004 10200B  	ada sum
+  7.  005 00200A  	lda counter
+  8.  006 100001  	ada# $001
+  9.  007 04200A  	sta counter
+ 10.  008 402001  	jmp loop
+ 11.  009 FFFFFF  end:	hlt
+ 12.  00A 000001  counter:	.word $001
+ 13.  00B 000000  sum:	.word $000
+ 14.  00C 000005  n:	.word max_int
+
+                     SYMBOL TABLE CONTENTS
+
+00000A = COUNTER         000009 = END             000001 = LOOP            
+000005 = MAX_INT         00000C = N               00000B = SUM             

@@ -1,0 +1,39 @@
+		.EQU @,$000
+			.EQU N, 6
+			.EQU temp, $090
+			;;.EQU A, $101
+			LDX# 0
+			STX J
+			LDX# 0
+			STX I
+outerLoop:	LDX I
+			CMX# N ;; test to make sure in range of array
+			JGT end
+			STX J  ;; position = index
+			LDA+ arr   ;; currentvalue = alist[index]
+			STA temp
+			CMX# 0   ;; make sure j > 0
+			JGT innerLoop
+			INC I
+			JMP outerLoop
+innerLoop:	LDA+ arr-1
+			CMA temp
+			JGT swap
+			LDA temp
+			STA+ arr
+			INC I
+			JMP outerLoop
+swap:			STA+ arr
+			DEC J
+			LDX J
+			JMP innerLoop
+end:			HLT
+I:			.BLKW 1
+J:			.BLKW 1
+arr:			.WORD 54 
+			.WORD 26 
+			.WORD 93
+			.WORD 17
+			.WORD 77
+			.WORD 31
+			.END

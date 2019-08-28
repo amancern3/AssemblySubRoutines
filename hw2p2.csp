@@ -1,0 +1,62 @@
+	.equ @, $000
+	
+	lda $100
+	sta length
+	sta j
+	sta min_v
+	ldx#	0
+
+for_1:	lda+	ARRAY
+	sta min_v
+	stx index	; store index
+
+	lda i	; load current i in first for loop
+	cma length
+	jlt for_2	; continue sorting 
+	jeq	end_pgrm	; end the sort program
+
+for_2:	lda i
+	cma length
+	jge	swap
+	inc 	i
+	adx#	1	
+	lda+	ARRAY
+	cma	min_v
+
+	jlt if	; comparision 
+	jmp for_2
+
+if:	sta min_v
+	stx	j	
+	jmp for_2
+	
+swap:	ldx index
+	lda+	array
+	sta temp_v
+
+	ldx min_v
+	sta+	array
+	ldx j
+	sta+ array
+	ldx index
+	adx#	1
+	TXA	
+	STA i
+	jmp for_1
+
+end_pgrm:	hlt
+
+j:	.WORD 0
+index:	.WORD 1
+i:	.WORD 1
+min_v:	.WORD 0
+temp_v:	.WORD 0
+length:	.WORD 0
+			;start @ $100
+	.equ @,$100
+ARRAY:	.word 100
+	.word 74
+	.word -144
+	.word 10022
+	.word 657
+	.word -33

@@ -1,0 +1,46 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              		.EQU @,$000
+  2.              			.EQU N, 6
+  3.              			.EQU temp, $090
+  4.              			;;.EQU A, $101
+  5.  000 010000  			LDX# 0
+  6.  001 05201B  			STX J
+  7.  002 010000  			LDX# 0
+  8.  003 05201A  			STX I
+  9.  004 01201A  outerLoop:	LDX I
+ 10.  005 210006  			CMX# N ;; test to make sure in range of array
+ 11.  006 4D2019  			JGT end
+ 12.  007 05201B  			STX J  ;; position = index
+ 13.  008 00401C  			LDA+ arr   ;; currentvalue = alist[index]
+ 14.  009 042090  			STA temp
+ 15.  00A 210000  			CMX# 0   ;; make sure j > 0
+ 16.  00B 4D200E  			JGT innerLoop
+ 17.  00C 1B201A  			INC I
+ 18.  00D 402004  			JMP outerLoop
+ 19.  00E 00401B  innerLoop:	LDA+ arr-1
+ 20.  00F 202090  			CMA temp
+ 21.  010 4D2015  			JGT swap
+ 22.  011 002090  			LDA temp
+ 23.  012 04401C  			STA+ arr
+ 24.  013 1B201A  			INC I
+ 25.  014 402004  			JMP outerLoop
+ 26.  015 04401C  swap:			STA+ arr
+ 27.  016 1C201B  			DEC J
+ 28.  017 01201B  			LDX J
+ 29.  018 40200E  			JMP innerLoop
+ 30.  019 FFFFFF  end:			HLT
+ 31.  01A FFFFFFFFFFFFFFFF  I:			.BLKW 1
+ 32.  01B FFFFFFFFFFFFFFFF  J:			.BLKW 1
+ 33.  01C 000036  arr:			.WORD 54 
+ 34.  01D 00001A  			.WORD 26 
+ 35.  01E 00005D  			.WORD 93
+ 36.  01F 000011  			.WORD 17
+ 37.  020 00004D  			.WORD 77
+ 38.  021 00001F  			.WORD 31
+ 39.              			.END
+
+                     SYMBOL TABLE CONTENTS
+
+00001C = ARR             000019 = END             00001A = I               
+00000E = INNERLOOP       00001B = J               000006 = N               
+000004 = OUTERLOOP       000015 = SWAP            000090 = TEMP            

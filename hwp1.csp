@@ -1,0 +1,44 @@
+	.equ @,000
+	.equ n_size, 6
+	
+	lda i ;; first for loop 
+for:	cma#	n_size
+	jge return ;; return_0 meanign Y is greater than X
+	ldx# 0
+	stx counter
+if:	cmx max
+	jgt return
+	lda+ X
+	cma+ Y
+	jlt comparison
+	inc i
+	adx# 1
+	jmp if
+	lda# 1
+	hlt
+	
+
+comparison:	lda#	0
+	hlt	 
+
+return:	lda#	1
+	hlt
+
+X:	.word 95
+	.word 1002
+	.word 233
+	.word -137
+	.word 6332
+	.word 33191
+
+Y:	.word 35
+	.word 102
+	.word 109
+	.word	-1378
+	.word	6332
+	.word	-33194
+
+max:	.word	n_size - 1
+result:	.word 0
+i: 	.word 0
+counter:	.word 0

@@ -1,0 +1,55 @@
+	.equ @, $000
+	lda#	0
+	sta temp_v
+	ldx#	0
+	stx j 
+	stx i
+	ldx# 0
+
+for_1:	ldx i
+	cmx#	length	; outer loop to iterate through array
+	jgt	end_pgrm
+	
+	stx j 	; current position is the index of interest 
+	lda+ ARRAY
+	sta temp_v
+
+	cmx#	0	; j > 0
+	jgt for_2
+
+	adx#	1
+	stx i 
+	jmp for_1
+
+for_2:
+	lda+	ARRAY - 1	
+
+if:	cma temp_v
+	jgt swap	; swap if condition of a[i] > a[i+1] is satisfied 
+	lda temp_v
+	
+	sta+	ARRAY	
+	inc i
+	jmp for_1
+			; use swap method from book - TA 
+swap:	sta+	ARRAY
+	ldx j 
+	sbx# 1
+	stx j
+	ldx j
+	jmp for_1
+
+end_pgrm:	hlt
+i:	.word 1
+j:	.word 1
+temp_v:	.word 0
+temp_i:	.word 0
+
+	.equ @, $100
+length:	.word 0
+ARRAY:	.word 100
+	.word 74
+	.word -144
+	.word 10022
+	.word 657
+	.word -33

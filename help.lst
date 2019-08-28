@@ -1,0 +1,70 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              .equ	@, $000
+  2.              	.equ	array, $101
+  3.              
+  4.  000 002100  	lda	$100
+  5.  001 04202C  	sta	len
+  6.  002 1C202C  	dec	len
+  7.  003 010000  	ldx#	0
+  8.              
+  9.  004 002029  loop:	lda	i
+ 10.  005 20202C  	cma	len
+ 11.  006 482026  	jeq	end
+ 12.  007 052027  	stx	index
+ 13.  008 004101  	lda+	array
+ 14.  009 04202A  	sta	min
+ 15.  00A 002029  	lda	i
+ 16.  00B 20202C  	cma	len
+ 17.  00C 4A200D  	jlt	loop2
+ 18.              
+ 19.  00D 002029  loop2:	lda	i
+ 20.  00E 20202C  	cma	len
+ 21.  00F 482019  	jeq	swap
+ 22.  010 1B2029  	inc	i
+ 23.  011 110001  	adx#	1
+ 24.  012 004101  	lda+	array
+ 25.  013 20202A  	cma	min
+ 26.  014 4C2016  	jle	loop3
+ 27.  015 40200D  	jmp	loop2
+ 28.              
+ 29.  016 04202A  loop3:	sta	min
+ 30.  017 052028  	stx	j
+ 31.  018 40200D  	jmp	loop2
+ 32.              	
+ 33.  019 012027  swap:	ldx	index
+ 34.  01A 004101  	lda+	array
+ 35.  01B 04202B  	sta	temp
+ 36.  01C 00202A  	lda	min
+ 37.  01D 044101  	sta+	array
+ 38.  01E 012028  	ldx	j
+ 39.  01F 00202B  	lda	temp
+ 40.  020 044101  	sta+	array
+ 41.  021 012027  	ldx	index
+ 42.  022 110001  	adx#	1
+ 43.  023 FFF003  	TXA
+ 44.  024 042029  	sta	i
+ 45.  025 402004  	jmp	loop
+ 46.              	
+ 47.  026 FFFFFF  end:	hlt
+ 48.              
+ 49.  027 000000  index:	.word 0
+ 50.  028 000000  j:	.word 0
+ 51.  029 000001  i:	.word 1
+ 52.  02A 000000  min:	.word 0
+ 53.  02B 000000  temp:	.word 0
+ 54.  02C 000000  len:	.word 0
+ 55.              	
+ 56.              	.equ @, $101
+ 57.  101 000064  	.word 100
+ 58.  102 00004A  	.word 74
+ 59.  103 FFFF70  	.word -144
+ 60.  104 002726  	.word 10022
+ 61.  105 000291  	.word 657
+ 62.  106 FFFFDF  	.word -33
+
+                     SYMBOL TABLE CONTENTS
+
+000101 = ARRAY           000026 = END             000029 = I               
+000027 = INDEX           000028 = J               00002C = LEN             
+000004 = LOOP            00000D = LOOP2           000016 = LOOP3           
+00002A = MIN             000019 = SWAP            00002B = TEMP            

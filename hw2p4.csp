@@ -1,0 +1,61 @@
+;binary search
+
+	.equ @, $000
+	
+	.equ target, $100
+	.equ	length, $101
+	.equ	sorted, $102	
+
+	;; target ACC = 1 if found , else 0 
+
+	lda length
+	sba#	1
+	sta c_length
+
+
+	lda#	0	
+	sta inital_v
+	lda inital_v
+loop_1:	cma c_length
+	jgt case_0
+
+	ada c_length
+	div#	2
+	sta	c_length
+	
+	ldx c_length
+	lda+ sorted 	; sorted[c_idx]
+	cma target
+	jeq case_1
+	jlt lesser_than
+	jgt greater_than
+
+lesser_than:	lda c_length	; lesser case iff tar > arr[c_idx]
+	ada#	1
+	sta inital_v
+	lda	inital_v
+	jmp loop_1
+
+greater_than:	lda c_length	; greater than case -- ask TA soon !!!!!
+	dec c_length
+	lda	inital_v
+	
+	jmp	loop_1
+
+case_0:	lda#	0
+	hlt
+
+case_1:	lda#	1
+	hlt
+
+inital_v:	.word 0
+c_length:	.word 0
+lim:	.word 0
+	
+	.equ @,$102
+	.word 1
+	.word 2
+	.word 3
+	.word 4
+	.word 5
+	.word 6

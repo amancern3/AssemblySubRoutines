@@ -1,0 +1,13 @@
+	lda	n
+loop:	cma#	$000	
+	jle end
+	mul result
+	sta result ; store result from the acc- sta
+	lda	n
+	sba#	$001 ; subtract from acc using direct memory address
+	sta	n 
+	jmp loop
+end:	hlt
+
+n:	.word $005
+result:	.word $001

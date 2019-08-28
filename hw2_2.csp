@@ -1,0 +1,70 @@
+	.equ @, $000
+	lda	$100
+	sta length
+	sta j
+	sta min_idx
+
+	dec length
+	ldx# 0
+
+for:	
+	lda i	; for ( i = 0 ; i < n - 1 ; i ++)
+			; iteration working -- issue with data muddling the last last element 
+
+	cma length
+	jeq	end_pgrm
+	stx index	; store current index
+	lda+	ARRAY
+	sta min_idx
+	lda i 
+	cma length
+	jlt for_2
+
+for_2:	lda i
+	cma length
+	jeq swap
+	inc i
+	adx# 1
+	lda+	ARRAY
+	cma min_idx
+	jle if
+	jmp for_2
+
+if:	sta min_idx
+	stx	j 
+	jmp for_2
+
+swap:	ldx index
+	lda+ ARRAY
+	sta temp	; temp == a[min_idx]
+			; a[min_idx] == a[i]
+	lda min_idx
+	sta+	array
+	ldx j
+	
+	lda	temp
+	sta+	ARRAY
+	ldx	index
+	adx#	1
+
+	TXA		; transfer XR to ACC
+	sta i
+	jmp for
+	
+
+
+end_pgrm:	hlt
+i:	.word 1
+j:	.word 0
+min_idx:	.word 0
+temp:	.word 0
+index:	.word 0
+
+	.equ @, $100
+length:	.word 0
+ARRAY:	.word 100
+	.word 74
+	.word -144
+	.word 100222
+	.word 657
+	.word -33

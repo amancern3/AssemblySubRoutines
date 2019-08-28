@@ -1,0 +1,28 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	; calling program 
+  2.              	.equ @, $000
+  3.              	.equ	stack, $060
+  4.              	.equ	arraysize, 5
+  5.  000 020060  	lds#	stack
+  6.  001 030000  	ldf#	0
+  7.  002 080020  	psh#	array
+  8.  003 080005  	psh# arraysize
+  9.  004 08000A  	psh#	10
+ 10.  005 412040  	jsr search
+ 11.  006 120003  	ads#	3
+ 12.  007 FFFFFF  	hlt
+ 13.              
+ 14.              	.equ @, $020
+ 15.  020 00001E  array:	.word 30
+ 16.  021 00000F  	.word 15
+ 17.  022 000019  	.word 25
+ 18.  023 00000A  	.word 10
+ 19.  024 000014  	.word 20
+ 20.              
+ 21.              	.equ @,$040
+ 22.  040 680000  search:	bgn#	0
+
+                     SYMBOL TABLE CONTENTS
+
+000020 = ARRAY           000005 = ARRAYSIZE       000040 = SEARCH          
+000060 = STACK           

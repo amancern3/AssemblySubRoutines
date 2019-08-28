@@ -1,0 +1,56 @@
+; Haree Akkala
+; 914866026
+; 5-15
+
+	.equ @,$000
+	.equ tar, $100	; integer value (target)
+	.equ len, $101	; length of array 
+	.equ SORTED, $102	; SORTED begins at $102
+			
+	; set ACC = 1 if tar found, else 0. 
+	lda len
+	sba# 1
+	sta lim
+	
+	lda init
+loop:	cma lim
+	jgt fail	; fail case
+	
+	ada lim
+	div# 2
+	sta curr	; find current index
+	
+	ldx curr	; store curr index
+	lda+ SORTED	; load array at mid index
+	cma tar	; see if element at curr index = target #
+	jeq found	; if it is > , then go to right arr loop
+
+	cma tar
+	jgt greater	; if it is == , then Voila! 
+
+	jmp lesser	; else, jump to less than (left case) 
+
+greater:	lda curr	; gr8r than case
+	sba# 1
+	sta lim
+
+	lda init
+	jmp loop
+
+lesser:	lda curr	; less than case
+	ada# 1
+	sta init
+	lda init
+	jmp loop
+
+found:	lda# 1	; voila case
+	hlt
+
+fail:	lda# 0	; fail case
+	hlt
+
+
+
+lim:	.word 0
+init:	.word 0
+curr:	.word	0	 ; try (lim + len ) /  2 

@@ -1,0 +1,70 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	
+  3.  000 002100  	lda $100
+  4.  001 04202A  	sta length
+  5.  002 042025  	sta j
+  6.  003 042028  	sta min_v
+  7.  004 010000  	ldx#	0
+  8.              
+  9.  005 004100  for_1:	lda+	ARRAY
+ 10.  006 042028  	sta min_v
+ 11.  007 052026  	stx index	; store index
+ 12.              
+ 13.  008 002027  	lda i	; load current i in first for loop
+ 14.  009 20202A  	cma length
+ 15.  00A 4A200C  	jlt for_2	; continue sorting 
+ 16.  00B 482024  	jeq	end_pgrm	; end the sort program
+ 17.              
+ 18.  00C 002027  for_2:	lda i
+ 19.  00D 20202A  	cma length
+ 20.  00E 4B2018  	jge	swap
+ 21.  00F 1B2027  	inc 	i
+ 22.  010 110001  	adx#	1	
+ 23.  011 004100  	lda+	ARRAY
+ 24.  012 202028  	cma	min_v
+ 25.              
+ 26.  013 4A2015  	jlt if	; comparision 
+ 27.  014 40200C  	jmp for_2
+ 28.              
+ 29.  015 042028  if:	sta min_v
+ 30.  016 052025  	stx	j	
+ 31.  017 40200C  	jmp for_2
+ 32.              	
+ 33.  018 012026  swap:	ldx index
+ 34.  019 004100  	lda+	array
+ 35.  01A 042029  	sta temp_v
+ 36.              
+ 37.  01B 012028  	ldx min_v
+ 38.  01C 044100  	sta+	array
+ 39.  01D 012025  	ldx j
+ 40.  01E 044100  	sta+ array
+ 41.  01F 012026  	ldx index
+ 42.  020 110001  	adx#	1
+ 43.  021 FFF003  	TXA	
+ 44.  022 042027  	STA i
+ 45.  023 402005  	jmp for_1
+ 46.              
+ 47.  024 FFFFFF  end_pgrm:	hlt
+ 48.              
+ 49.  025 000000  j:	.WORD 0
+ 50.  026 000001  index:	.WORD 1
+ 51.  027 000001  i:	.WORD 1
+ 52.  028 000000  min_v:	.WORD 0
+ 53.  029 000000  temp_v:	.WORD 0
+ 54.  02A 000000  length:	.WORD 0
+ 55.              			;start @ $100
+ 56.              	.equ @,$100
+ 57.  100 000064  ARRAY:	.word 100
+ 58.  101 00004A  	.word 74
+ 59.  102 FFFF70  	.word -144
+ 60.  103 002726  	.word 10022
+ 61.  104 000291  	.word 657
+ 62.  105 FFFFDF  	.word -33
+
+                     SYMBOL TABLE CONTENTS
+
+000100 = ARRAY           000024 = END_PGRM        000005 = FOR_1           
+00000C = FOR_2           000027 = I               000015 = IF              
+000026 = INDEX           000025 = J               00002A = LENGTH          
+000028 = MIN_V           000018 = SWAP            000029 = TEMP_V          

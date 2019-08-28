@@ -1,0 +1,22 @@
+	; calling program 
+	.equ @, $000
+	.equ	stack, $060
+	.equ	arraysize, 5
+	lds#	stack
+	ldf#	0
+	psh#	array
+	psh# arraysize
+	psh#	10
+	jsr search
+	ads#	3
+	hlt
+
+	.equ @, $020
+array:	.word 30
+	.word 15
+	.word 25
+	.word 10
+	.word 20
+
+	.equ @,$040
+search:	bgn#	0

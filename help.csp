@@ -1,0 +1,62 @@
+.equ	@, $000
+	.equ	array, $101
+
+	lda	$100
+	sta	len
+	dec	len
+	ldx#	0
+
+loop:	lda	i
+	cma	len
+	jeq	end
+	stx	index
+	lda+	array
+	sta	min
+	lda	i
+	cma	len
+	jlt	loop2
+
+loop2:	lda	i
+	cma	len
+	jeq	swap
+	inc	i
+	adx#	1
+	lda+	array
+	cma	min
+	jle	loop3
+	jmp	loop2
+
+loop3:	sta	min
+	stx	j
+	jmp	loop2
+	
+swap:	ldx	index
+	lda+	array
+	sta	temp
+	lda	min
+	sta+	array
+	ldx	j
+	lda	temp
+	sta+	array
+	ldx	index
+	adx#	1
+	TXA
+	sta	i
+	jmp	loop
+	
+end:	hlt
+
+index:	.word 0
+j:	.word 0
+i:	.word 1
+min:	.word 0
+temp:	.word 0
+len:	.word 0
+	
+	.equ @, $101
+	.word 100
+	.word 74
+	.word -144
+	.word 10022
+	.word 657
+	.word -33
