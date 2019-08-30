@@ -1,0 +1,28 @@
+	.equ zero,0
+	.equ n_one,-1
+	.equ m, $100
+	.equ n, $101
+	.equ result, $102
+
+	lda n ; load n into ACC 
+	cma zero ; compare n to zeros , i.e product == 0
+	jgt result0
+	lda m	; load m into ACC 
+	cma zero
+	jgt result0
+	
+loop:	lda counter ; load result in for the multiplication process
+	cma	n
+	jgt end
+	ada# $001 ; add one to counter
+	sta counter 
+	lda result
+	ada m
+	sta result ; store product so far in result
+	jmp loop
+end:	hlt
+
+;; have to reset all variables make sure 
+negate:	NEGA
+result0:	sta result ; Store product == 0 into result if n/m == 0
+counter:	.word $001	

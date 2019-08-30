@@ -1,0 +1,43 @@
+	.equ @, $000
+	.equ stack, $040
+	lds#	stack	;loading stack pointer with value of stack
+	ldf#	0	; frame pointer loaded with 0 
+			; the frame pointer should be 0 and the stack should be 040 at the end of all of our procedures to ensure that the program is working correctly !
+
+	psh main_base
+	psh main_exp
+	jsr	power
+
+	ads#	2	; add imeidiate - same as popping two things in the stack 
+	sta answer
+	hlt
+
+main_base:	.word 3
+main_exp:	.word 4
+answer:	.word 
+
+; power subroutine 
+	.equ @,$020
+	; define offsets here ! for param passing this is required 
+	; check notebook lecture 10 
+	.equ base, 3
+	.equ exp, 2
+power:	pshf	; push frame pointer to the stack and not stack pointer is pointing at the same location 
+	tsf	; do not move the frame pointer after this since its frozen, the sp is free to point to anything it wants 
+	lda#	1
+	sta temp 
+
+loop:	lda ! exp
+	cma#	0
+	jle end
+	lda temp
+	mul ! base ; base is an offset - take whatever the offset is and add it to the frame pointer
+	sta temp
+	dec ! exp
+	jmp 	loop
+
+; wrapping up the procedure 
+end:	lda temp
+	popf
+	rtn
+temp:	.WORD 0	

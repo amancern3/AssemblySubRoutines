@@ -1,4 +1,5 @@
 LINE ADDR CONTENTS SOURCE LINE
+<<<<<<< HEAD
   1.              	.equ @, $000
   2.  000 002100  	lda	$100
   3.  001 042100  	sta length
@@ -77,3 +78,75 @@ LINE ADDR CONTENTS SOURCE LINE
 00000F = FOR_2           000029 = I               000018 = IF              
 00002D = INDEX           00002A = J               000100 = LENGTH          
 00002B = MIN_IDX         00001B = SWAP            00002C = TEMP            
+=======
+  1.              ; hw2p2 using selection sort
+  2.              	.equ	@,$000
+  3.              
+  4.  000 010000  	ldx# 0
+  5.              	
+  6.              
+  7.  001 004101  loop:	lda+ array
+  8.  002 04202B  	sta min
+  9.  003 052028  	stx	index
+ 10.  004 00202A  	lda	i
+ 11.  005 202100  	cma	length
+ 12.  006 4A2008  	jlt	loop2
+ 13.  007 482027  	jeq	end
+ 14.              
+ 15.  008 00202A  loop2:	lda	i
+ 16.  009 202100  	cma	length
+ 17.  00A 482017  	jeq	swap
+ 18.  00B 00202A  	lda	i
+ 19.  00C 100001  	ada#	1
+ 20.  00D 04202A  	sta	i
+ 21.  00E 110001  	adx#	1
+ 22.  00F 004101  	lda+	array
+ 23.  010 20202B  	cma	min
+ 24.  011 4D2013  	jgt	loop3
+ 25.  012 402008  	jmp	loop2
+ 26.              
+ 27.  013 004101  loop3:	lda+ array
+ 28.  014 04202B  	sta	min
+ 29.  015 052029  	stx j
+ 30.  016 402008  	jmp	loop2
+ 31.              	
+ 32.  017 012028  swap:	ldx	index
+ 33.  018 004101  	lda+	array
+ 34.  019 04202C  	sta	temp
+ 35.  01A 00202B  	lda	min
+ 36.  01B 044101  	sta+	array
+ 37.  01C 012028  	ldx	index
+ 38.  01D 044101  	sta+	array
+ 39.  01E 00202C  	lda	temp
+ 40.  01F 01202B  	ldx	min
+ 41.  020 044101  	sta+	array
+ 42.  021 012028  	ldx	index
+ 43.  022 110001  	adx#	1
+ 44.  023 FFF003  	TXA
+ 45.  024 04202A  	sta i
+ 46.  025 1B202A  	inc i 
+ 47.  026 402001  	jmp	loop
+ 48.              	
+ 49.  027 FFFFFF  end:	hlt
+ 50.              
+ 51.  028 000000  index:	.word 0
+ 52.  029 000000  j:	.word 0
+ 53.  02A 000001  i:	.word 1
+ 54.  02B 000000  min:	.word 0
+ 55.  02C 000000  temp:	.word 0
+ 56.              	.equ @, $100
+ 57.  100 000006  length:	.word 6	
+ 58.  101 000064  array:	.word 100
+ 59.  102 00004A  	.word 74
+ 60.  103 FFFF70  	.word -144
+ 61.  104 002726  	.word 10022
+ 62.  105 000291  	.word 657
+ 63.  106 FFFFDF  	.word -33
+
+                     SYMBOL TABLE CONTENTS
+
+000101 = ARRAY           000027 = END             00002A = I               
+000028 = INDEX           000029 = J               000100 = LENGTH          
+000001 = LOOP            000008 = LOOP2           000013 = LOOP3           
+00002B = MIN             000017 = SWAP            00002C = TEMP            
+>>>>>>> 40bfa303663d6065e21a588b1d144e77b143cb38

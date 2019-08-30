@@ -1,0 +1,49 @@
+	.equ @, $000
+	.equ stack, $060
+	.equ vecsize, 5
+	lds#	stack
+	ldf#	0
+	psh#	vector1
+	psh#	vector2
+	psh#	vector3
+	psh#	vecsize
+	jsr addarrays
+	ads#	4	; take 4 thins off the stack
+	hlt
+
+
+	.equ	@,$020
+vector1:	.word 1
+	.word 2
+	.word 3
+	.word 4
+	.word 5
+
+vector2:	.word 1
+	.word 2
+	.word 3
+	.word 4
+	.word 5
+vector3:	.blkw 5,0
+
+	.equ @,$040
+; when calling sr first thing to do is to push the fp to the stack
+	.equ v1, 5
+	.equ v2, 4
+	.equ v3, 3
+	.equ size, 2
+
+addarrays:	pshf
+	tsf
+	ldx#	0
+loop:	cmx ! size
+	jge end
+	lda&	! v1	; indirect addressing with frame. 
+	ada&	! v2
+	sta&	! v3
+	adx#	1
+	jmp loop 
+
+end:	popf		; needed before ending to remove old frame pointer 
+	rtn
+	

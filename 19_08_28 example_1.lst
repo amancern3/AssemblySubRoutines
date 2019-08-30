@@ -1,0 +1,50 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stack, $040
+  3.  000 020040  	lds#	stack	;loading stack pointer with value of stack
+  4.  001 030000  	ldf#	0	; frame pointer loaded with 0 
+  5.              			; the frame pointer should be 0 and the stack should be 040 at the end of all of our procedures to ensure that the program is working correctly !
+  6.              
+  7.  002 082008  	psh main_base
+  8.  003 082009  	psh main_exp
+  9.  004 412020  	jsr	power
+ 10.              
+ 11.  005 120002  	ads#	2	; add imeidiate - same as popping two things in the stack 
+ 12.  006 04200A  	sta answer
+ 13.  007 FFFFFF  	hlt
+ 14.              
+ 15.  008 000003  main_base:	.word 3
+ 16.  009 000004  main_exp:	.word 4
+ 17.  00A 000000  answer:	.word 
+ 18.              
+ 19.              ; power subroutine 
+ 20.              	.equ @,$020
+ 21.              	; define offsets here ! for param passing this is required 
+ 22.              	; check notebook lecture 10 
+ 23.              	.equ base, 3
+ 24.              	.equ exp, 2
+ 25.  020 FFF012  power:	pshf	; push frame pointer to the stack and not stack pointer is pointing at the same location 
+ 26.  021 FFF008  	tsf	; do not move the frame pointer after this since its frozen, the sp is free to point to anything it wants 
+ 27.  022 000001  	lda#	1
+ 28.  023 04202F  	sta temp 
+ 29.              
+ 30.  024 003002  loop:	lda ! exp
+ 31.  025 200000  	cma#	0
+ 32.  026 4C202C  	jle end
+ 33.  027 00202F  	lda temp
+ 34.  028 183003  	mul ! base ; base is an offset - take whatever the offset is and add it to the frame pointer
+ 35.  029 04202F  	sta temp
+ 36.  02A 1C3002  	dec ! exp
+ 37.  02B 402024  	jmp 	loop
+ 38.              ; wrapping up the procedure 
+ 39.  02C 00202F  end:	lda temp
+ 40.  02D FFF015  	popf
+ 41.  02E FFF040  	rtn
+ 42.  02F 000000  temp:	.WORD 0	
+
+                     SYMBOL TABLE CONTENTS
+
+00000A = ANSWER          000003 = BASE            00002C = END             
+000002 = EXP             000024 = LOOP            000008 = MAIN_BASE       
+000009 = MAIN_EXP        000020 = POWER           000040 = STACK           
+00002F = TEMP            

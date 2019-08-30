@@ -20,9 +20,42 @@ LINE ADDR CONTENTS SOURCE LINE
  19.  024 000014  	.word 20
  20.              
  21.              	.equ @,$040
- 22.  040 680000  search:	bgn#	0
+ 22.              	.equ target, 2
+ 23.              	.equ length, 3
+ 24.              	.equ array_, 4
+ 25.              
+ 26.  040 680000  search:	bgn#	0
+ 27.  041 FFF008  	tsf	
+ 28.  042 010000  	ldx#	0
+ 29.              
+ 30.              linear_search:	
+ 31.  043 002053  	lda i 
+ 32.  044 201002  	cma# ! length - 1
+ 33.  045 48204C  	jeq acc_0
+ 34.              	
+ 35.  046 009004  	lda&	! array_
+ 36.  047 203002  	cma	! target 
+ 37.  048 48204F  	jeq	acc_1
+ 38.              	
+ 39.  049 1B2053  	inc i 
+ 40.  04A 110001  	adx#	1
+ 41.  04B 402043  	jmp linear_search
+ 42.              
+ 43.  04C 002052  acc_0:	lda end
+ 44.  04D FFF015  	popf
+ 45.  04E FFF040  	rtn
+ 46.              
+ 47.  04F FFF003  acc_1:	txa
+ 48.  050 FFF015  	popf
+ 49.  051 FFF040  	rtn
+ 50.              
+ 51.  052 FFFFFF  end:	.word $FFFFFF	
+ 52.  053 000000  i:	.word 0
+ 53.              
 
                      SYMBOL TABLE CONTENTS
 
-000020 = ARRAY           000005 = ARRAYSIZE       000040 = SEARCH          
-000060 = STACK           
+00004C = ACC_0           00004F = ACC_1           000020 = ARRAY           
+000005 = ARRAYSIZE       000004 = ARRAY_          000052 = END             
+000053 = I               000003 = LENGTH          000043 = LINEAR_SEARCH   
+000040 = SEARCH          000060 = STACK           000002 = TARGET          

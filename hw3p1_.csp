@@ -1,0 +1,44 @@
+; calling program
+	.equ @,$000
+	.equ stack, $060
+	.equ arraysize, 5
+	lds# stack	;where stack begins
+	ldf# 0	;frame pointer is 0
+	psh# array	;push addr of array
+	psh# arraysize	;push the size of the array
+	psh#	10	;push the target value to be found
+	jsr	search	;call subroutine
+	ads# 3	;take actual parameters off stack
+	hlt
+; array goes here
+	.equ	@, $020
+array:	.word 30
+	.word 15
+	.word 25
+	.word 10
+	.word 20
+
+	.equ	@, $040
+	.equ target, 2
+	.equ len, 3
+	.equ numbas, 4
+search:	pshf
+	tsf
+	ldx#	0
+	
+loop:	lda	counter
+	cma !len
+	jeq	not_found
+	lda& !numbas
+	cma !target
+	jeq	found
+	inc	counter
+	adx#	1
+	jmp	loop
+found:	txa
+	popf
+	rtn
+not_found:	lda	$FFFFFF
+	popf
+	rtn	
+counter:	.word 1

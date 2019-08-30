@@ -19,4 +19,34 @@ array:	.word 30
 	.word 20
 
 	.equ @,$040
+	.equ target, 2
+	.equ length, 3
+	.equ array_, 4
+
 search:	bgn#	0
+	tsf	
+	ldx#	0
+
+linear_search:	
+	lda i 
+	cma# ! length - 1
+	jeq acc_0
+	
+	lda&	! array_
+	cma	! target 
+	jeq	acc_1
+	
+	inc i 
+	adx#	1
+	jmp linear_search
+
+acc_0:	lda end
+	popf
+	rtn
+
+acc_1:	txa
+	popf
+	rtn
+
+end:	.word $FFFFFF	
+i:	.word 0

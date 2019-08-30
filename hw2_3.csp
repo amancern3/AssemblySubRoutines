@@ -1,0 +1,62 @@
+	.equ @,$000
+	lda	$100
+	ldx#	0	;load XR w 0 --start
+	lda#	0
+	sta i
+	sta j		; initalize counter var to 0
+	sta index
+	lda i
+for_1:	cma length
+	jeq end_1	; hlt program
+	jlt for_2
+
+for_2:	lda j
+	ldx i 
+	cma# length - i- 1
+	jlt if
+	jeq inc_i
+
+if:	ldx	j
+	adx#	1
+	stx	j_2
+	lda+ ARRAY
+	sta	temp	; temp == 74
+	ldx j
+	lda+	ARRAY	; comp 100 ? 74
+	cma#	temp
+	jgt	swap
+
+swap:	ldx j
+	lda+ ARRAY
+	sta temp	; temp == 100
+	ldx j_2
+	lda+ ARRAY	; ACC:= a[j+1]
+	ldx j		; XR := j
+	sta+ ARRAY 	; a[j] = 74
+	lda temp
+	ldx j_2
+	sta+ ARRAY
+	inc j
+	TXA
+	sta j
+	jmp if
+
+inc_i:	lda i
+	ada#	1
+	sta i
+
+end_1:	hlt	
+	
+index:	.word 0
+j:	.word 0
+j_2:	.word 0
+i:	.word 0
+temp:	.word 0
+	.equ@,	100
+length:	.word 6
+ARRAY:	.word 100
+	.word 74
+	.word -144
+	.word 10022
+	.word 657
+	.word -33

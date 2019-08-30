@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 	.equ @, $000
 	lda	$100
 	sta length
@@ -68,3 +69,61 @@ ARRAY:	.word 100
 	.word 100222
 	.word 657
 	.word -33
+=======
+.equ	@, $000
+	lda	$100
+	sta	length
+	ldx# 0
+
+loop:	lda+	array
+	sta	min
+	stx	index
+	lda	i
+	cma	length
+	jlt	loop2
+	jeq	end
+
+loop2:	lda	i
+	cma	length
+	jeq	swap
+	inc	i
+	adx#	1
+	lda+	array
+	cma	min
+	jlt	loop3
+	jmp	loop2
+
+loop3:	sta	min
+	stx	j
+	jmp	loop2
+	
+swap:	ldx	index
+	lda+	array
+	sta	temp
+	lda	min
+	sta+	array
+	ldx	j
+	lda	temp
+	sta+	array
+	ldx	index
+	adx#	1
+	TXA
+	sta	i
+	jmp	loop
+	
+end:	hlt
+
+index:	.word 0
+j:	.word 0
+i:	.word 1
+min:	.word 0
+temp:	.word 0
+length:	.word 0
+	.equ @, $100
+array:	.word 100
+	.word 74
+	.word -144
+	.word 10022
+	.word 657
+	.word -33
+>>>>>>> 40bfa303663d6065e21a588b1d144e77b143cb38
