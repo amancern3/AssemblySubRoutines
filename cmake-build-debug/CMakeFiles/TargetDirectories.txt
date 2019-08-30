@@ -1,0 +1,4 @@
+/cygdrive/d/SCHOOL/Summer 2 - 2019/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/cygdrive/d/SCHOOL/Summer 2 - 2019/cmake-build-debug/CMakeFiles/edit_cache.dir
+/cygdrive/d/SCHOOL/Summer 2 - 2019/cmake-build-debug/CMakeFiles/array_comp.dir
+/cygdrive/d/SCHOOL/Summer 2 - 2019/cmake-build-debug/CMakeFiles/RepeatedAddition.dir

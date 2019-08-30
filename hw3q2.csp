@@ -38,7 +38,16 @@ transpose:	bgn#	0	;decode stack information
 	lda	i
 for_i:	cma# ! N - 1	
 	jeq end_transp
+	sta pos_m
+	clr j 
 	tax
+
+	ldx pos_n	; loading the current position in the current row 
+	lda& ! A
+	adx# 1
+	stx pos_n	; updating position for transpose array
+
+	
 	ada# ! M-1
 	sta	j_end
 	cmx j_end

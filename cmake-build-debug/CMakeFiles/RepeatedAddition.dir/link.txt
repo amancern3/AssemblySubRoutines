@@ -1,0 +1,1 @@
+/usr/bin/cc -g  -Wl,--enable-auto-import CMakeFiles/RepeatedAddition.dir/main.c.o  -o RepeatedAddition.exe -Wl,--out-implib,libRepeatedAddition.dll.a -Wl,--major-image-version,0,--minor-image-version,0 

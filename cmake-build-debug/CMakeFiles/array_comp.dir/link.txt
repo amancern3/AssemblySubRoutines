@@ -1,0 +1,1 @@
+/usr/bin/cc -g  -Wl,--enable-auto-import CMakeFiles/array_comp.dir/array_comparision.c.o  -o array_comp.exe -Wl,--out-implib,libarray_comp.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
