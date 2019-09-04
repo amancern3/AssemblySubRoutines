@@ -22,7 +22,7 @@ array:	.word 30
 	.equ target, 2
 	.equ length, 3
 	.equ array_, 4
-
+				; subroutine that performs linaer search
 search:	bgn#	0
 	tsf	
 	ldx#	0
@@ -32,14 +32,14 @@ linear_search:
 	cma# ! length - 1
 	jeq acc_0
 	
-	lda&	! array_
+	lda&	! array_	; compares index by index
 	cma	! target 
 	jeq	acc_1
 	
 	inc i 
 	adx#	1
 	jmp linear_search
-
+				; different end conditions
 acc_0:	lda end
 	popf
 	rtn

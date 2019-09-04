@@ -1,0 +1,89 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ N,3
+  3.              	.equ M,2
+  4.              	.equ @,$000
+  5.              	.equ STACKTOP, $E00
+  6.              
+  7.              	; use CBA method for arrays since only have to pass address of the array to be transposed
+  8.              
+  9.  000 020E00  	lds#	STACKTOP
+ 10.  001 030000  	ldf#	0
+ 11.              
+ 12.  002 080009  	psh#	matrix	; loading stack in order
+ 13.  003 080003  	psh#	N
+ 14.  004 080002  	psh#	M
+ 15.  005 080080  	psh#	$080
+ 16.  006 412020  	jsr	transpose
+ 17.  007 120004  	ads#	4	;destroy stack 
+ 18.  008 FFFFFF  	hlt
+ 19.              
+ 20.  009 000001  matrix:	.word 1 
+ 21.  00A 000002  	.word 2
+ 22.  00B 000003  	.word 3
+ 23.  00C 000004  	.word 4
+ 24.  00D 000005  	.word 5
+ 25.  00E 000006  	.word 6
+ 26.              
+ 27.  00F 000000  AT_address:	.blkw M*N, 0
+ 28.              
+ 29.              	
+ 30.              ; Subroutine Start
+ 31.              	.equ @, $020
+ 32.              	.equ AT, 2
+ 33.              	.equ	N_, 4
+ 34.              	.equ	M_, 3
+ 35.              	.equ A, 5
+ 36.              	
+ 37.  020 680000  transpose:	bgn#	0	;decode stack information 
+ 38.  021 FFF008  	tsf
+ 39.  022 010000  	ldx#	0
+ 40.              
+ 41.  023 00203D  	lda	i
+ 42.              for_i:	
+ 43.  024 201004  	cma# ! N_ 	
+ 44.  025 482036  	jeq end_transp
+ 45.  026 04203C  	sta AT_pos
+ 46.              
+ 47.  027 0A203E  	clr j 
+ 48.              	
+ 49.              	
+ 50.  028 00203E  for_j:	lda j 
+ 51.  029 203003  	cma ! M_ 
+ 52.  02A 482035  	jeq end_col
+ 53.              
+ 54.  02B 01203B  	ldx	intial_pos
+ 55.  02C 009005  	lda&	! A
+ 56.  02D 110001  	adx#	1
+ 57.  02E 05203B  	stx intial_pos
+ 58.              
+ 59.  02F 01203C  	ldx AT_pos	; The transpose bit 
+ 60.  030 049002  	sta&	!AT
+ 61.  031 111003  	adx#	!N
+ 62.  032 05203C  	stx	AT_pos	
+ 63.              	
+ 64.  033 1B203E  	inc j
+ 65.  034 402028  	jmp for_j
+ 66.              
+ 67.  035 402024  end_col:	jmp for_i
+ 68.              
+ 69.  036 FFF003  end_transp:	txa		; restoring fp and returning to calling function 
+ 70.  037 FFF015  	popf
+ 71.  038 FFF040  	rtn
+ 72.              
+ 73.  039 000000  pos_m:	.word 0
+ 74.  03A 000000  pos_n:	.word 0
+ 75.  03B 000000  intial_pos:	.word 0
+ 76.  03C 000000  AT_pos:	.word 0 
+ 77.  03D 000001  i:	.word 1
+ 78.  03E 000001  j:	.word 1
+
+                     SYMBOL TABLE CONTENTS
+
+000005 = A               000002 = AT              00000F = AT_ADDRESS      
+00003C = AT_POS          000035 = END_COL         000036 = END_TRANSP      
+000024 = FOR_I           000028 = FOR_J           00003D = I               
+00003B = INTIAL_POS      00003E = J               000002 = M               
+000009 = MATRIX          000003 = M_              000003 = N               
+000004 = N_              000039 = POS_M           00003A = POS_N           
+000E00 = STACKTOP        000020 = TRANSPOSE       

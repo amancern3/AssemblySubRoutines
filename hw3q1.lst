@@ -23,7 +23,7 @@ LINE ADDR CONTENTS SOURCE LINE
  22.              	.equ target, 2
  23.              	.equ length, 3
  24.              	.equ array_, 4
- 25.              
+ 25.              				; subroutine that performs linaer search
  26.  040 680000  search:	bgn#	0
  27.  041 FFF008  	tsf	
  28.  042 010000  	ldx#	0
@@ -33,14 +33,14 @@ LINE ADDR CONTENTS SOURCE LINE
  32.  044 201002  	cma# ! length - 1
  33.  045 48204C  	jeq acc_0
  34.              	
- 35.  046 009004  	lda&	! array_
+ 35.  046 009004  	lda&	! array_	; compares index by index
  36.  047 203002  	cma	! target 
  37.  048 48204F  	jeq	acc_1
  38.              	
  39.  049 1B2053  	inc i 
  40.  04A 110001  	adx#	1
  41.  04B 402043  	jmp linear_search
- 42.              
+ 42.              				; different end conditions
  43.  04C 002052  acc_0:	lda end
  44.  04D FFF015  	popf
  45.  04E FFF040  	rtn

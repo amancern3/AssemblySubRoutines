@@ -1,6 +1,7 @@
 	.equ @, $000
 	.equ N,3
 	.equ M,2
+	.equ @,$000
 	.equ STACKTOP, $E00
 
 	; use CBA method for arrays since only have to pass address of the array to be transposed
@@ -12,9 +13,7 @@
 	psh#	N
 	psh#	M
 	psh#	$080
-
 	jsr	transpose
-
 	ads#	4	;destroy stack 
 	hlt
 
@@ -24,6 +23,9 @@ matrix:	.word 1
 	.word 4
 	.word 5
 	.word 6
+
+AT_address:	.blkw M*N, 0
+
 	
 ; Subroutine Start
 	.equ @, $020
@@ -32,49 +34,45 @@ matrix:	.word 1
 	.equ	M_, 3
 	.equ A, 5
 	
-transpose:		;decode stack information 
-	pshf
+transpose:	bgn#	0	;decode stack information 
 	tsf
 	ldx#	0
-	clr i
-	lda i 
+
+	lda	i
 for_i:	
-	cma !N_ 	
+	cma# ! N_ 	
 	jeq end_transp
+	sta AT_pos
 
-	mul !M_ 
-	sta pos	; matrix position 
-
-	clr j
+	clr j 
 	
 	
-for_j:	lda j
-	cma !M_ 
+for_j:	lda j 
+	cma ! M_ 
 	jeq end_col
-	
-	mul !N_ 
-	sta AT_pos	; equivalent A transpose position
 
-	ldx j	; The transpose bit 
-	adx pos
-	lda& !A	
-	
-	ldx	i
-	adx AT_pos
-	sta& !AT
+	ldx	intial_pos
+	lda&	! A
+	adx#	1
+	stx intial_pos
 
+	ldx AT_pos	; The transpose bit 
+	sta&	!AT
+	adx#	!N
+	stx	AT_pos	
+	
 	inc j
 	jmp for_j
 
-end_col:	inc i
-	lda i
-	jmp for_i
+end_col:	jmp for_i
 
-end_transp:		; restoring fp and returning to calling function 
+end_transp:	txa		; restoring fp and returning to calling function 
 	popf
 	rtn
-			; essential variables for transpse
-pos:	.word 0
+
+pos_m:	.word 0
+pos_n:	.word 0
+intial_pos:	.word 0
 AT_pos:	.word 0 
-i:	.word 0
-j:	.word 0
+i:	.word 1
+j:	.word 1
