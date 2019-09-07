@@ -1,0 +1,48 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stacktop, $E00
+  3.              
+  4.  000 020E00  	lds# stacktop
+  5.  001 030000  	ldf# 0
+  6.              
+  7.  002 080009  	psh# test_string
+  8.  003 082008  	psh length
+  9.  004 080100  	psh# output_string
+ 10.  005 412105  	jsr convert
+ 11.  006 120003  	ads# 3
+ 12.  007 FFFFFF  	hlt
+ 13.              
+ 14.  008 000005  length:	.word 5
+ 15.  009 68456C  test_string:	.char 'hElLo'
+      00A 4C6F20
+ 16.              
+ 17.              	.equ @, $100
+ 18.  100 FFFFFFFFFFFFFFFF  output_string:	.blkw 5
+ 19.              
+ 20.              	.equ input, 4
+ 21.              	.equ N, 3
+ 22.              	.equ output, 2
+ 23.              
+ 24.  105 680000  convert:	bgn# 0
+ 25.  106 010000  	ldx# 0
+ 26.              
+ 27.  107 507004  loop:	ldc* !input ;acc = input[XR]
+ 28.  108 200061  	cma# 'a'	;if z>= character >= a
+ 29.  109 4A210D  	jlt next
+ 30.  10A 20007A  	cma# 'z'
+ 31.  10B 4D210D  	jgt next
+ 32.  10C 140020  	sba# 'a'-'A' ;converts to uppercase
+ 33.              
+ 34.  10D 517002  next:	stc* !output ;write character from acc to output string
+ 35.  10E 110001  	adx# 1
+ 36.  10F 213003  	cmx !N
+ 37.  110 4A2107  	jlt loop
+ 38.  111 690000  	fin# 0
+ 39.  112 FFF040  	rtn
+
+                     SYMBOL TABLE CONTENTS
+
+000105 = CONVERT         000004 = INPUT           000008 = LENGTH          
+000107 = LOOP            000003 = N               00010D = NEXT            
+000002 = OUTPUT          000100 = OUTPUT_STRING   000E00 = STACKTOP        
+000009 = TEST_STRING     

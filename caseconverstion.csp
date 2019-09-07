@@ -1,0 +1,39 @@
+	.equ @, $000
+	.equ stacktop, $E00
+
+	lds# stacktop
+	ldf# 0
+
+	psh# test_string
+	psh length
+	psh# output_string
+	jsr convert
+	ads# 3
+	hlt
+
+length:	.word 5
+test_string:	.char 'hElLo'
+
+	.equ @, $100
+output_string:	.blkw 5
+
+	.equ input, 4
+	.equ N, 3
+	.equ output, 2
+
+convert:	bgn# 0
+	ldx# 0
+
+loop:	ldc* !input ;acc = input[XR]
+	cma# 'a'	;if z>= character >= a
+	jlt next
+	cma# 'z'
+	jgt next
+	sba# 'a'-'A' ;converts to uppercase
+
+next:	stc* !output ;write character from acc to output string
+	adx# 1
+	cmx !N
+	jlt loop
+	fin# 0
+	rtn

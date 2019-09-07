@@ -1,0 +1,54 @@
+	.equ @,$000	; main program
+	.equ stack, $E00
+
+	lds stack
+	ldf#	0
+
+	psh# string
+	psh#	string_len
+	psh#	conv_string
+
+	jsr	swapcase
+	ads#	2
+	hlt
+
+string:	.char 'hoW Many Cookies?', string_len
+conv_string:	.blkw string_len
+
+
+	.equ @, $020
+	.equ output, 2
+	.equ len, 3
+	.equ input, 4
+	
+swapcase:	bgn#	0
+	ldx#	0
+
+loop:	ldc*	! input
+	cma# 'a'
+	jge upper
+	and# 'z'
+	jle upper
+
+	cma#	' '
+	jeq next
+	
+	cma#	'A'
+	jge lower
+	and#	'Z'
+	jle lower
+	
+
+next:	stc* ! output
+	adx#	1
+	cmx ! len
+	
+	jlt loop
+	fin#	0
+	rtn
+
+lower:	ada#	37
+	jmp next
+	
+upper:	sba#	'a' - 'A'
+	jmp next	
