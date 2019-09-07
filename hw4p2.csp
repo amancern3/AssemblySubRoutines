@@ -1,0 +1,35 @@
+	.equ @, $000
+	.equ stack, $E00
+
+	lds#	stack
+	ldf#	0
+	
+	psh#	og_string
+	psh#	string_len
+	psh#	conv_string
+
+	jsr title
+	ads# 3
+	hlt
+
+og_string:	.char 'hoW Many cookies?', string_len
+conv_string:	.blkw string_len
+	
+	.equ @,$020
+	.equ len, 3
+	.equ input, 4
+	.equ output, 2
+
+
+; few ideas 
+; 1 )use maxchars to see if it helps in traversing through the indv words 
+; 2 )use counters and idx var to keep track of all the rules provided in the prompt
+title:	bgn# 0
+	ldx# 0
+
+loop:	ldx i 
+	cmx ! len
+	
+	ldc* !input
+	
+maxchars:	( len + 2 ) / 3
