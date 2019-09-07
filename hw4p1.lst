@@ -22,46 +22,52 @@ LINE ADDR CONTENTS SOURCE LINE
  16.  00E FFFFFFFFFFFFFFFF  conv_string:	.blkw string_len
  17.              
  18.              
- 19.              	.equ @, $020
+ 19.              	.equ @, $020	; subroutine to swith case in a string 
  20.              	.equ output, 2
  21.              	.equ len, 3
  22.              	.equ input, 4
  23.              	
- 24.  020 680000  swapcase:	bgn#	0
- 25.  021 010000  	ldx#	0
+ 24.  020 680000  swapcase:	bgn# 0
+ 25.  021 010000  	ldx# 0
  26.              
- 27.  022 507004  loop:	ldc*	! input
- 28.  023 200061  	cma# 'a'
- 29.  024 4B2035  	jge upper
- 30.  025 30007A  	and# 'z'
- 31.  026 4C2035  	jle upper
+ 27.  022 507004  loop: 	ldc* !input
+ 28.              
+ 29.  023 200061  lower: 	cma# 'a'	; converstion of lower to upper -- also checks if the current char is to be ignored in the converstion 
+ 30.  024 4B202D         	jge upper
+ 31.  025 4A2035  	jlt next
  32.              
- 33.  027 200020  	cma#	' '
- 34.  028 48202D  	jeq next
- 35.              	
- 36.  029 200041  	cma#	'A'
- 37.  02A 4B2033  	jge lower
- 38.  02B 30005A  	and#	'Z'
- 39.  02C 4C2033  	jle lower
- 40.              	
- 41.              
- 42.  02D 517002  next:	stc* ! output
- 43.  02E 110001  	adx#	1
- 44.  02F 213003  	cmx ! len
- 45.              	
- 46.  030 4A2022  	jlt loop
- 47.  031 690000  	fin#	0
- 48.  032 FFF040  	rtn
- 49.              
- 50.  033 100025  lower:	ada#	37
- 51.  034 40202D  	jmp next
- 52.              	
- 53.  035 140020  upper:	sba#	'a' - 'A'
- 54.  036 40202D  	jmp next	
+ 33.  026 20007A         	cma# 'z'
+ 34.  027 4C202D        	jle upper
+ 35.  028 4D2035  	jgt next
+ 36.              
+ 37.  029 140020        	sba# 'a' - 'A'
+ 38.  02A 402035  	jmp next
+ 39.              
+ 40.  02B 200020        	cma# ' '
+ 41.  02C 482035         	jeq next
+ 42.              	
+ 43.  02D 200041  upper:	cma# 'A'	; converstion of upper to lower --also checks if the current char is to be ignored in the converstion 
+ 44.  02E 4A2035         	jlt next
+ 45.  02F 20005A         	cma# 'Z'
+ 46.  030 4D2035         	jgt next
+ 47.  031 100020         	ada# 'a' - 'A'
+ 48.  032 517002        	stc* !output
+ 49.  033 110001        	adx# 1
+ 50.  034 402022         	jmp loop
+ 51.              	
+ 52.  035 517002  next: 	stc* !output
+ 53.  036 110001        	adx# 1
+ 54.  037 213003       	 cmx ! len
+ 55.              	
+ 56.  038 4A2022        	jlt loop	; end clause 
+ 57.  039 690000        	fin# 0
+ 58.  03A FFF040       	rtn
+ 59.              
+ 60.              
 
                      SYMBOL TABLE CONTENTS
 
 00000E = CONV_STRING     000004 = INPUT           000003 = LEN             
-000022 = LOOP            000033 = LOWER           00002D = NEXT            
+000022 = LOOP            000023 = LOWER           000035 = NEXT            
 000002 = OUTPUT          000E00 = STACK           000008 = STRING          
-000011 = STRING_LEN      000020 = SWAPCASE        000035 = UPPER           
+000011 = STRING_LEN      000020 = SWAPCASE        00002D = UPPER           

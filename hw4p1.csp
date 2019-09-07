@@ -16,39 +16,44 @@ string:	.char 'hoW Many Cookies?', string_len
 conv_string:	.blkw string_len
 
 
-	.equ @, $020
+	.equ @, $020	; subroutine to swith case in a string 
 	.equ output, 2
 	.equ len, 3
 	.equ input, 4
 	
-swapcase:	bgn#	0
-	ldx#	0
+swapcase:	bgn# 0
+	ldx# 0
 
-loop:	ldc*	! input
-	cma# 'a'
-	jge upper
-	and# 'z'
-	jle upper
+loop: 	ldc* !input
 
-	cma#	' '
-	jeq next
-	
-	cma#	'A'
-	jge lower
-	and#	'Z'
-	jle lower
-	
+lower: 	cma# 'a'	; converstion of lower to upper -- also checks if the current char is to be ignored in the converstion 
+       	jge upper
+	jlt next
 
-next:	stc* ! output
-	adx#	1
-	cmx ! len
-	
-	jlt loop
-	fin#	0
-	rtn
+       	cma# 'z'
+      	jle upper
+	jgt next
 
-lower:	ada#	37
+      	sba# 'a' - 'A'
 	jmp next
+
+      	cma# ' '
+       	jeq next
 	
-upper:	sba#	'a' - 'A'
-	jmp next	
+upper:	cma# 'A'	; converstion of upper to lower --also checks if the current char is to be ignored in the converstion 
+       	jlt next
+       	cma# 'Z'
+       	jgt next
+       	ada# 'a' - 'A'
+      	stc* !output
+      	adx# 1
+       	jmp loop
+	
+next: 	stc* !output
+      	adx# 1
+     	 cmx ! len
+	
+      	jlt loop	; end clause 
+      	fin# 0
+     	rtn
+
