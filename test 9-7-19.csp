@@ -1,0 +1,97 @@
+.EQU @,$000 ; main program start address
+main:
+LDS# $E00 ; initialize stack to $E00
+
+PSH# string ; address of original string
+PSH# strLength ; number of characters in original string
+PSH# converted ; address of converted string
+JSR title ; convert to title
+ADS# 3 ; restore stack pointer
+
+PSH# msg1len ; string length
+PSH# msg1 ; address of string to print
+JSR $E05 ; print string on console
+ADS# 2 ; restore stack pointer
+
+PSH# strLength ; string length
+PSH# string ; address of string to print
+JSR $E05 ; print original string on console
+ADS# 2 ; restore stack pointer
+
+PSH# msg2len ; string length
+PSH# msg2 ; address of string to print
+JSR $E05 ; print string on console
+ADS# 2 ; restore stack pointer
+
+PSH# strLength ; string length
+PSH# converted ; address of string to print
+JSR $E05 ; print converted string on console
+ADS# 2 ; restore stack pointer
+
+HLT ; terminate program
+
+; Swapcase subroutine
+.EQU @,$020 ; subroutine start address
+.EQU origStr,4
+.EQU lenStr,3
+.EQU convStr,2
+title:
+PSHF ; push FP on stack
+TSF ; load stack pointer in FP
+LDX ! origStr ; load address of original string
+STX posA ; save it in the variable posA
+LDX ! convStr ; load address of converted string
+STX posB ; save it in the variable posB
+LDX# 0
+loop:
+LDC* posA ; load character from original string
+
+CMA# 32 ; see if it was a space
+JNE testCase ; if not, see if we need to change case
+SET upcase ; set upper to !=0
+JMP skip
+testCase:
+TST upcase ; see if we need to convert to uppercase	; upcase becomes zero when we encounter char, i.e it remains one as long as it is space
+JNE toupcase ; if so, convert
+tolowcase:
+CMA# ‘A’ ; if char < ‘A’, skip conversion
+JLT skip
+CMA# ‘Z’ ; if char > ‘A’ and <= ‘Z’, convert
+JGT skip
+XOR# 32 ; xor with 32 to convert to lower case
+JMP skip
+toupcase:
+CMA# ‘A’ ; if char < ‘A’, skip conversion
+JLT skip
+CMA# ‘Z’ ; if char > ‘A’ and <= ‘Z’, is already up, clear flag
+JLE clrup
+CMA# ‘a’ ; if char < ‘a’, skip conversion
+JLT skip
+CMA# ‘z’ ; if char > ‘z’ skip conversion
+JGT skip
+XOR# 32 ; xor with 32 to invert case
+clrup:
+CLR upcase ; only one letter needs to be upcase
+skip:
+STC* posB ; save character in converted string
+
+ADX# 1 ; advance to next position in array
+
+CMX ! lenStr ; compare with string length
+JLT loop ; if I < string length, continue loop
+
+POPF ; restore FP from stack
+RTN ; return to caller
+
+; Variables for subroutine
+posA: .word 0 ; position in original string
+posB: .word 0 ; position in converted string
+upcase: .word 1 ; indicates if character case must be in upper case
+
+; Variables used in main
+msg1: .char ‘Initial string’, msg1len
+msg2: .char ‘CRConverted string’, msg2len
+string: .char ‘lEArN pYtHOn iN 30 YeaRS!’, strLength
+converted: .blkw 10, 0
+
+.END

@@ -1,0 +1,105 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stack, $E00
+  3.              
+  4.  000 020E00  	lds#	stack
+  5.  001 030000  	ldf#	0
+  6.              	
+  7.  002 080008  	psh#	og_string
+  8.  003 08001E  	psh#	string_len
+  9.  004 080012  	psh#	conv_string
+ 10.              
+ 11.  005 412020  	jsr title
+ 12.  006 120003  	ads# 3
+ 13.  007 FFFFFF  	hlt
+ 14.              
+ 15.  008 686969  og_string:	.char 'hiiiiihow ar r r  9r 9e9y   u?', string_len
+      009 696969
+      00A 686F77
+      00B 206172
+      00C 207220
+      00D 722020
+      00E 397220
+      00F 396539
+      010 792020
+      011 20753F
+ 16.  012 FFFFFFFFFFFFFFFF  conv_string:	.blkw string_len
+ 17.              	
+ 18.              	.equ @,$020
+ 19.              	.equ len, 3
+ 20.              	.equ input, 4
+ 21.              	.equ output, 2
+ 22.              
+ 23.              
+ 24.              ; few ideas 
+ 25.              ; 1 )use maxchars to see if it helps in traversing through the indv words 
+ 26.              ; 2 )use counters and idx var to keep track of all the rules provided in the prompt
+ 27.  020 680000  title:	bgn# 0
+ 28.  021 010000  	ldx# 0
+ 29.              
+ 30.  022 507004  loop:	ldc* !input
+ 31.  023 200020  	cma# ' '	; check for space, to figure out case of incoming char
+ 32.  024 482027  	jeq spacecheck
+ 33.  025 492028  	jne casecheck
+ 34.  026 402044  	jmp next
+ 35.              
+ 36.  027 1B204B  spacecheck:	inc bool	
+ 37.              
+ 38.  028 00204B  casecheck:	lda bool 	; case checking
+ 39.  029 200000  	cma# 0
+ 40.  02A 48202C  	jeq lower
+ 41.  02B 492035  	jne upper
+ 42.              
+ 43.  02C 507004  lower:	ldc* !input	; coverts upper to lower chr
+ 44.  02D 200041  	cma# 'A'
+ 45.  02E 4D2044  	jgt next
+ 46.  02F 20005A  	cma# 'Z'
+ 47.  030 4A2044  	jlt next
+ 48.              
+ 49.  031 320020  	XOR# 'a' - 'A'
+ 50.  032 517002  	stc* !output
+ 51.  033 110001        	adx# 1
+ 52.  034 402022  	jmp loop
+ 53.              
+ 54.  035 507004  upper:	ldc* !input	; coverts lower to upper chr
+ 55.  036 200041  	cma# 'A'
+ 56.  037 4A2044  	jlt next
+ 57.              	
+ 58.  038 20005A  	cma# 'Z'
+ 59.  039 4C2043  	jle space_clr
+ 60.              	
+ 61.  03A 200061  	cma#	'a'
+ 62.  03B 4A2044  	jlt next
+ 63.  03C 20007A  	cma# 'z'
+ 64.  03D 4D2044  	jgt next 
+ 65.              
+ 66.  03E 320020  	xor# 'a' - 'A'
+ 67.  03F 517002  	stc* !output
+ 68.  040 110001        	adx# 1
+ 69.  041 402043  	jmp space_clr 
+ 70.  042 402022         	jmp loop
+ 71.              
+ 72.  043 0A204B  space_clr:	clr bool	; reset the flag
+ 73.              
+ 74.              next:
+ 75.  044 507004  	ldc* !input
+ 76.  045 517002  	stc* !output
+ 77.  046 110001  	adx# 1
+ 78.              	
+ 79.  047 213003  	cmx ! len
+ 80.  048 4A2022  	jlt loop
+ 81.              
+ 82.  049 690000  	fin# 0
+ 83.  04A FFF040  	rtn
+ 84.              
+ 85.  04B 000001  bool:	.word 1
+ 86.              
+
+                     SYMBOL TABLE CONTENTS
+
+00004B = BOOL            000028 = CASECHECK       000012 = CONV_STRING     
+000004 = INPUT           000003 = LEN             000022 = LOOP            
+00002C = LOWER           000044 = NEXT            000008 = OG_STRING       
+000002 = OUTPUT          000027 = SPACECHECK      000043 = SPACE_CLR       
+000E00 = STACK           00001E = STRING_LEN      000020 = TITLE           
+000035 = UPPER           

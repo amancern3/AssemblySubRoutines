@@ -1,3 +1,4 @@
+;main program
 	.equ @, $000
 	.equ stack, $E00
 
@@ -12,7 +13,7 @@
 	ads# 3
 	hlt
 
-og_string:	.char 'hoW Many cookies?', string_len
+og_string:	.char 'hiiiiihow ar r r  9r 9e9y   u?', string_len
 conv_string:	.blkw string_len
 	
 	.equ @,$020
@@ -24,12 +25,65 @@ conv_string:	.blkw string_len
 ; few ideas 
 ; 1 )use maxchars to see if it helps in traversing through the indv words 
 ; 2 )use counters and idx var to keep track of all the rules provided in the prompt
+
+; subroutine
+
 title:	bgn# 0
 	ldx# 0
 
-loop:	ldx i 
-	cmx ! len
+loop:	ldc* !input
+	cma# ' '	; check for space, to figure out case of incoming char
+	jeq spacecheck
+	jne casecheck
+	jmp next
+
+spacecheck:	inc bool	
+
+casecheck:	lda bool 	; case checking
+	cma# 0
+	jeq lower
+	jne upper
+
+lower:	ldc* !input	; coverts upper to lower chr
+	cma# 'A'
+	jgt next
+	cma# 'Z'
+	jlt next
+
+	XOR# 'a' - 'A'
+	stc* !output
+      	adx# 1
+	jmp loop
+
+upper:	ldc* !input	; coverts lower to upper chr
+	cma# 'A'
+	jlt next
 	
+	cma# 'Z'	; already upper case
+	jle space_clr
+	
+	cma#	'a'	; symbol check
+	jlt next
+	cma# 'z'
+	jgt next 
+
+	xor# 'a' - 'A'	
+	stc* !output
+      	adx# 1
+	jmp space_clr 
+       	jmp loop
+
+space_clr:	clr bool	; reset the flag
+
+next:
 	ldc* !input
+	stc* !output
+	adx# 1
 	
-maxchars:	( len + 2 ) / 3
+	cmx ! len	; end clause
+	jlt loop
+
+	fin# 0		
+	rtn
+
+bool:	.word 1
