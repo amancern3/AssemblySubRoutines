@@ -1,0 +1,13 @@
+output = []
+for j in input
+    output2.append(j)
+    if j == space
+       newinput=output2
+
+for i in input
+
+    orig_val = get ASCII number of i
+    if some limiting value, st we are only analyzing ASCII of capital letters>=orig_val >= 1100001 (manipulates all capital letter)
+        new_val = orig_val - 100000
+        output.append(new_val)
+    if >=orig_val>=some minimum value to reprsent ASCII of lower case

@@ -13,10 +13,10 @@ LINE ADDR CONTENTS SOURCE LINE
  12.  006 120002  	ads#	2
  13.  007 FFFFFF  	hlt
  14.              
- 15.  008 686F57  string:	.char 'hoW Many Cookies?', string_len
-      009 204D61
+ 15.  008 486F77  string:	.char 'How many cookies?', string_len
+      009 206D61
       00A 6E7920
-      00B 436F6F
+      00B 636F6F
       00C 6B6965
       00D 733F20
  16.  00E FFFFFFFFFFFFFFFF  conv_string:	.blkw string_len
@@ -32,41 +32,41 @@ LINE ADDR CONTENTS SOURCE LINE
  26.              
  27.  022 507004  loop: 	ldc* !input
  28.              
- 29.  023 200061  lower: 	cma# 'a'	; converstion of upper to lower case -- also checks if the current char is to be ignored in the converstion
- 30.  024 4B202D         	jge upper
- 31.  025 4A2035  	jlt next
+ 29.  023 200041  lower: 	cma# 'A'	; converstion of upper to lower case -- also checks if the current char is to be ignored in the converstion
+ 30.                     	;jge upper
+ 31.  024 4A2033  	jlt next
  32.              
- 33.  026 20007A         	cma# 'z'
- 34.  027 4C202D        	jle upper
- 35.  028 4D2035  	jgt next
+ 33.  025 20005A         	cma# 'Z'
+ 34.                    	;jle upper
+ 35.  026 4D202B  	jgt upper
  36.              
- 37.  029 140020        	sba# 'a' - 'A'
- 38.  02A 402035  	jmp next
+ 37.  027 100020        	ada# 'a' - 'A'
+ 38.  028 402033  	jmp next
  39.              
- 40.  02B 200020        	cma# ' '
- 41.  02C 482035         	jeq next
+ 40.  029 200020        	cma# ' '
+ 41.  02A 482033         	jeq next
  42.              
- 43.  02D 200041  upper:	cma# 'A'	; converstion of lower to upper case --also checks if the current char is to be ignored in the converstion
- 44.  02E 4A2035         	jlt next
- 45.  02F 20005A         	cma# 'Z'
- 46.  030 4D2035         	jgt next
- 47.  031 100020         	ada# 'a' - 'A'
- 48.  032 517002        	stc* !output
- 49.  033 110001        	adx# 1
- 50.  034 402022         	jmp loop
+ 43.  02B 200061  upper:	cma# 'a'	; converstion of lower to upper case --also checks if the current char is to be ignored in the converstion
+ 44.  02C 4A2033         	jlt next
+ 45.  02D 20007A         	cma# 'z'
+ 46.  02E 4D2033         	jgt next
+ 47.  02F 140020         	sba# 32
+ 48.  030 517002        	stc* !output
+ 49.  031 110001        	adx# 1
+ 50.  032 402022         	jmp loop
  51.              
- 52.  035 517002  next: 	stc* !output
- 53.  036 110001        	adx# 1
- 54.  037 213003       	 cmx ! len
+ 52.  033 517002  next: 	stc* !output
+ 53.  034 110001        	adx# 1
+ 54.  035 213003       	 cmx ! len
  55.              
- 56.  038 4A2022        	jlt loop	; end clause
- 57.  039 690000        	fin# 0
- 58.  03A FFF040       	rtn
+ 56.  036 4A2022        	jlt loop	; end clause
+ 57.  037 690000        	fin# 0
+ 58.  038 FFF040       	rtn
  59.              
 
                      SYMBOL TABLE CONTENTS
 
 00000E = CONV_STRING     000004 = INPUT           000003 = LEN             
-000022 = LOOP            000023 = LOWER           000035 = NEXT            
+000022 = LOOP            000023 = LOWER           000033 = NEXT            
 000002 = OUTPUT          000E00 = STACK           000008 = STRING          
-000011 = STRING_LEN      000020 = SWAPCASE        00002D = UPPER           
+000011 = STRING_LEN      000020 = SWAPCASE        00002B = UPPER           

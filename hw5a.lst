@@ -1,0 +1,24 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ; problem 5a
+  2.              	.equ @, $000
+  3.              	.equ n, 6
+  4.              	.equ m, 7
+  5.              	.equ stack, $002
+  6.              
+  7.  000 020002  main:	lds# stack
+  8.  001 030000  	ldf# 0
+  9.              	
+ 10.  002 080006  	psh# prevgen
+ 11.  003 080006  	psh# n
+ 12.  004 080007  	psh# m
+ 13.  005 080030  	psh# nextgen
+ 14.  006 000000  prevgen:	.blkw n*m , 0 
+ 15.  030 000000  nextgen:	.blkw n*m, 0
+ 16.              
+ 17.              	.equ @, $400
+ 18.              	
+
+                     SYMBOL TABLE CONTENTS
+
+000007 = M               000000 = MAIN            000006 = N               
+000030 = NEXTGEN         000006 = PREVGEN         000002 = STACK           
