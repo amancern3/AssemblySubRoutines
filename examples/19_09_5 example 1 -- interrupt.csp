@@ -1,0 +1,29 @@
+	.equ stackstart, $030
+	.equ enable_ints, $80
+	.equ kbd_ctrl, $000
+	.equ kbd_data, $001
+	.equ crt_data, $317
+	.equ	ex_point, $21
+
+	lds#	stackstart
+	lda#	enable_ints
+	outb	kbd_ctrl
+	
+	sie		; tells cusp to be sensitive to interups 
+loop:	nop		; word filler, used to syncornize
+	nop
+	nop
+	jmp	loop
+
+
+	.equ	@,$200
+kbd_int:	psha
+	inb	kbd_data
+	lda#	ex_point
+	outb	crt_data
+	popa
+	irtn		; execute interupt sr 
+
+; on reciving an interupt we go to locattion FF8 to look for the starting location of the SR'
+	.equ @, $FF8
+	.word kbd_int

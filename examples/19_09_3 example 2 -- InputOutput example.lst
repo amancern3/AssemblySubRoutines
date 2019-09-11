@@ -1,0 +1,17 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ kbd_status, $000	; port 000
+  2.              	.equ	kbd_data, $001	; port 001
+  3.              	.equ display, $317	; these memory addys/ports have speicific meaning
+  4.              	
+  5.  000 702000  loop:	inb	kbd_status
+  6.              	; lt flag is updated with the lefmost bit of the 8 bits of the buffer status regarding the kbd. As soon as there is something in the buffer we make sure to update the lt flag to 1 then the jump does not happen or else we are continously in an infinite loop waiting for data
+  7.              
+  8.  001 4B2000  	jge 	loop
+  9.  002 702001  	inb kbd_data
+ 10.  003 712317  	outb	display
+ 11.  004 402000  	jmp loop
+
+                     SYMBOL TABLE CONTENTS
+
+000317 = DISPLAY         000001 = KBD_DATA        000000 = KBD_STATUS      
+000000 = LOOP            

@@ -1,0 +1,11 @@
+	.equ kbd_status, $000	; port 000
+	.equ	kbd_data, $001	; port 001
+	.equ display, $317	; these memory addys/ports have speicific meaning
+	
+loop:	inb	kbd_status
+	; lt flag is updated with the lefmost bit of the 8 bits of the buffer status regarding the kbd. As soon as there is something in the buffer we make sure to update the lt flag to 1 then the jump does not happen or else we are continously in an infinite loop waiting for data
+
+	jge 	loop
+	inb kbd_data
+	outb	display
+	jmp loop

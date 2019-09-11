@@ -1,0 +1,47 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ; Generic printing string of given string with known length
+  2.              
+  3.              	.equ @,$000
+  4.  000 020100  	lds#	$100
+  5.  001 030000  	ldf#	0	
+  6.  002 080012  	psh# prompt_len
+  7.  003 080007  	psh#	prompt
+  8.  004 412020  	jsr put_str
+  9.  005 120002  	ads#	2
+ 10.  006 FFFFFF  	hlt
+ 11.  007 686F77  prompt:	.char 'how many cookies? ', prompt_len
+      008 206D61
+      009 6E7920
+      00A 636F6F
+      00B 6B6965
+      00C 733F20
+ 12.              
+ 13.              	.equ	@,$020
+ 14.              	.equ	chars,3
+ 15.              	.equ string, 2
+ 16.              	.equ crt_Data, $317
+ 17.              
+ 18.  020 FFF012  put_str:	pshf
+ 19.  021 FFF008  	tsf
+ 20.              	; writers of subroutiness save everything because we do not know how the calling program performs
+ 21.  022 FFF010  	psha
+ 22.  023 FFF011  	pshx
+ 23.              
+ 24.  024 010000  	ldx#	0
+ 25.              
+ 26.  025 507002  p_loop:	ldc*	! string	;use indirect operator. load chr from string using frame addressing. 	Cant use & due to it being word by word addressing not byte by byte / chars. 
+ 27.  026 712317  	outb	crt_data	; crt - cathode ray tube displays -- book is from 1992 huge television displays 
+ 28.              	
+ 29.  027 603003  	aoc	! chars	; add one and compare
+ 30.  028 4A2025  	jlt	p_loop
+ 31.              
+ 32.  029 FFF014  	popx
+ 33.  02A FFF013  	popa
+ 34.  02B FFF015  	popf
+ 35.  02C FFF040  	rtn
+
+                     SYMBOL TABLE CONTENTS
+
+000003 = CHARS           000317 = CRT_DATA        000007 = PROMPT          
+000012 = PROMPT_LEN      000020 = PUT_STR         000025 = P_LOOP          
+000002 = STRING          

@@ -1,0 +1,36 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ stackstart, $030
+  2.              	.equ enable_ints, $80
+  3.              	.equ kbd_ctrl, $000
+  4.              	.equ kbd_data, $001
+  5.              	.equ crt_data, $317
+  6.              	.equ	ex_point, $21
+  7.              
+  8.  000 020030  	lds#	stackstart
+  9.  001 000080  	lda#	enable_ints
+ 10.  002 712000  	outb	kbd_ctrl
+ 11.              	
+ 12.  003 FFF032  	sie		; tells cusp to be sensitive to interups 
+ 13.  004 FFF038  loop:	nop		; word filler, used to syncornize
+ 14.  005 FFF038  	nop
+ 15.  006 FFF038  	nop
+ 16.  007 402004  	jmp	loop
+ 17.              
+ 18.              
+ 19.              	.equ	@,$200
+ 20.  200 FFF010  kbd_int:	psha
+ 21.  201 702001  	inb	kbd_data
+ 22.  202 000021  	lda#	ex_point
+ 23.  203 712317  	outb	crt_data
+ 24.  204 FFF013  	popa
+ 25.  205 FFF041  	irtn		; execute interupt sr 
+ 26.              
+ 27.              ; on reciving an interupt we go to locattion FF8 to look for the starting location of the SR'
+ 28.              	.equ @, $FF8
+ 29.  FF8 000200  	.word kbd_int
+
+                     SYMBOL TABLE CONTENTS
+
+000317 = CRT_DATA        000080 = ENABLE_INTS     000021 = EX_POINT        
+000000 = KBD_CTRL        000001 = KBD_DATA        000200 = KBD_INT         
+000004 = LOOP            000030 = STACKSTART      

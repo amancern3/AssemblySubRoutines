@@ -1,0 +1,14 @@
+	ldx#	0
+loop:	cmx#	len
+	jge end
+	ldc old
+	ada#	1	
+	stc new
+	adx#	1
+	jmp loop
+end:	hlt
+
+	.equ	@,$010
+old:	.char 'hi how are you', len
+	.equ @, $015
+new:	.blkw 5,0

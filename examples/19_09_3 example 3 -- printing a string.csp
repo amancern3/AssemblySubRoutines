@@ -1,0 +1,35 @@
+; Generic printing string of given string with known length
+
+	.equ @,$000
+	lds#	$100
+	ldf#	0	
+	psh# prompt_len
+	psh#	prompt
+	jsr put_str
+	ads#	2
+	hlt
+prompt:	.char 'how many cookies? ', prompt_len
+
+	.equ	@,$020
+	.equ	chars,3
+	.equ string, 2
+	.equ crt_Data, $317
+
+put_str:	pshf
+	tsf
+	; writers of subroutiness save everything because we do not know how the calling program performs
+	psha
+	pshx
+
+	ldx#	0
+
+p_loop:	ldc*	! string	;use indirect operator. load chr from string using frame addressing. 	Cant use & due to it being word by word addressing not byte by byte / chars. 
+	outb	crt_data	; crt - cathode ray tube displays -- book is from 1992 huge television displays 
+	
+	aoc	! chars	; add one and compare
+	jlt	p_loop
+
+	popx
+	popa
+	popf
+	rtn
