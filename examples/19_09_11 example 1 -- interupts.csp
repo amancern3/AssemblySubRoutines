@@ -1,0 +1,166 @@
+.equ crt_vbuf, $100
+.equ crt_cntl, $316
+.equ crt_width, 38
+
+.equ clear_screen, $01
+
+.equ get_num, $e01
+.equ put_str, $e05
+.equ kbd_data, $001
+
+.equ kbd_cntl, $000
+
+
+;pg 212 in the book
+.equ tim_cntl, $30
+.equ tim_sta, $30
+.equ tim_value, $31
+
+.equ interrupt_ena, $80	; setting leftmost bit to enable
+
+.equ enable_reset_and_start, $d0	; set bits for timer beg
+.equ enable_and_reset, $c0	; enable and reset timer after interrupt
+
+.equ stacktop, $e00
+
+main:	
+lds# stacktop
+
+lda timer_cycles
+outw tim_value	; register that is counting down 
+
+get_user_input:
+cie ; dissable all interrupts
+
+lda# clear_screen
+outb crt_cntl ; want all old stuff gone
+
+psh# row_str_len
+psh# row_string
+jsr put_str 	; mini_os subroutine
+ads# 2
+jsr get_num	; get num from user
+
+sta num_rows
+lda# 30	; load  0
+sta character
+
+; wipe the screen
+lda# clear_screen
+outb crt_cntl
+
+sie	; enable all interrupts
+
+lda# enable_reset_and_start
+outb tim_cntl
+
+;re-enable keyboard interrupts
+; get_num may have disabled them before
+
+lda# interrupt_ena
+outb kbd_cntl
+
+loop:
+lda character
+cma max_character
+jgt get_user_input
+jmp loop
+hlt
+
+timer_isr:
+lda# enable_and_reset
+outb tim_cntl ; reset ready bit
+
+inc character
+lda character
+cma max_character
+jgt end_t_isr	; reached max char, return and prompt user
+ldx# 0
+clr col
+clr row
+
+t_grid_loop:
+lda character
+outb+ crt_vbuf	; write to screen
+adx# 1
+inc col 
+lda col
+cma num_cols
+jlt t_grid_loop
+
+k_grid_loop:
+lda character
+outb+ crt_vbuf	; write to screen
+adx# 1
+inc col 
+lda col
+cma num_cols
+jlt k_grid_loop
+
+; go to the next line in the screen by using
+; index += crt_width - num_cols
+
+adx# crt_width
+sbx num_cols
+
+clr col
+inc row
+lda row
+cma num_rows
+jlt t_grid_loop
+
+end_t_isr:
+irtn	; return from this interrupt
+
+end_keyboard_isr:
+irtn
+
+keyboard_isr:
+inb kbd_data	; read kbd char from buffer
+
+inc character
+lda character 
+cma max_character
+jgt end_keyboard_isr
+
+ldx# 0
+clr col 
+clr row
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+row:	.word 0
+col:	.word 0
+num_rows:	.word 0
+num_cols:	.word 0
+character:	.word $30 ;0
+max_character:	.word $39 ;9
+timer_cycles: .word 300000
+
+row_string: .char 'enter number of rows', row_str_len
+col_string: .char 'enter number of cols', col_str_len
+
+.equ @, $ffb	;interrupt address for timer
+.word timer_isr
+
+.equ @, $ff8	; interrupt address for keyboard
+.word keyboard_isr
+
