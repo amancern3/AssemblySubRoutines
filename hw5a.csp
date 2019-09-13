@@ -1,0 +1,41 @@
+; problem 5a
+	.equ @, $000
+	.equ n, 3
+	.equ m, 4
+	.equ stack, $002
+
+main:	lds# stack
+	ldf# 0
+	
+	psh# prevgen
+	psh# n
+	psh# m
+	psh# nextgen
+	jsr nextGen
+
+	
+prevgen:	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 1
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+
+nextgen:	.blkw n*m, 0
+
+	.equ @, $400
+	.equ nxt, 2
+	.equ col, 3
+	.equ row, 4
+	.equ prv, 5
+
+nextGen:	tsf
+	ldx# 0
+	
+	lda

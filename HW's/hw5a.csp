@@ -1,35 +1,245 @@
 ; problem 5a
 	.equ @, $000
-	.equ n, 3
-	.equ m, 4
+	.equ row, 6
+	.equ col, 7
 	.equ stack, $002
+
+	.equ kbd_v,$ff8
+	.equ prt_str, $E05
+	.equ new_lne, $E06
 
 main:	lds# stack
 	ldf# 0
 	
-	psh# prevgen
-	psh# n
-	psh# m
-	psh# nextgen
-	jsr nextGen
-
+	clr gen
 	
-prevgen:	.word 0
-	.word 0
-	.word 0
-	.word 0
-	.word 0
-	.word 0
-	.word 0
-	.word 1
-	.word 0
-	.word 0
-	.word 0
-	.word 0
+	lda# kbd_isr
+	sta kbd_v	; isr routine save 
 
-nextgen:	.blkw n*m, 0
+	psh# len
+	psh# msg1
+	jsr prt_str
+	ads# 2
+	jsr new_lne
+	jsr new_lne
+
+	psh# prevgen
+	psh# row
+	psh# col
+	psh# nxtgen
+	jsr nextGen
+	ads# 4
+	
+	inc gen
+	
+gen:	.word 0	
+prevgen:	 .word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 1
+.word 0
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 0
+.word 1
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 1
+.word 1
+.word 1
+.word 1
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 0
+.word 1
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+
+nxtgen:	.blkw row*col, 0
 
 	.equ @, $400
-	.equ 2, nxt
-	.equ 
-nextGen:
+	.equ nxt, 2
+	.equ m, 3
+	.equ n, 4
+	.equ prv, 5
+
+; flow of thinking 
+; on the current position, make sure to check every directional neighbour by 
+; implementing functions that perform the XR and positional manipulation, whilst keeping a count
+; of number of neighbours. 
+; Use Next function from prev assigments.
+nextGen:	bgn# 0
+	clr i
+
+f_row:	clr j
+f_col:	clr n_count
+	lda i
+	cmx ! n
+	jeq row_end
+	mul ! m
+	ada j
+	sta pos
+
+	lda i
+	cma# 0
+	jeq m_left	; does not work with m_right done first for some reason -- check bug
+
+t_left:	lda j
+	cma# 0
+	jeq t_mid
+
+	ldx pos
+	sbx ! m	; top left position
+	sbx# 1
+	lda& ! prv
+	ada n_count
+	sta n_count
+
+t_mid:	ldx pos
+	sbx ! m
+	lda& ! prv
+	
+	ada n_count
+	sta n_count
+
+t_right:	lda j
+	cma ! m
+	jge m_left	; if j >= m, skip and test midleft neighbour
+
+	ldx pos
+	sbx ! m
+	adx# 1
+
+	lda& ! prv
+	ada n_count
+	sta n_count
+
+m_right:	lda j		; load j and compare max cols if greater than or ==, skip
+	cma ! m
+	jge down
+
+	ldx pos
+	adx# 1
+	lda& ! prv
+	cma# 1
+	inc n_count
+
+m_left:	lda j		; load j and see if its at the leftmost border if so -- skipz`
+	cma# 0
+	jeq m_right
+
+	ldx pos
+	sbx# 1		; go left
+	lda& ! prv
+	ada n_count
+	sta n_count
+
+down:	lda i
+	ada# 1	 	; row = row + 1
+	cma ! n
+	jge cell_update
+
+d_right:	lda j
+	cma ! m
+	jge d_mid	; experimental ===
+
+	ldx pos
+	adx ! m
+	adx# 1
+	lda& ! prv
+	ada n_count
+	sta n_count
+
+d_mid:	ldx pos
+	adx ! m
+	sbx# 1
+	
+	lda& ! prv
+	ada n_count
+	sta n_count	
+
+d_left:	lda j 
+	cma# 0
+	jeq cell_update
+	
+	ldx pos
+	adx ! m
+	sbx# 1
+	lda& ! prv
+	ada n_count
+	sta n_count
+
+cell_update:	ldx pos
+	
+	lda& ! prv
+	sta& ! nxt
+
+	cma# 0
+	jeq dead
+	jne alive
+
+dead:	lda n_count
+	cma# 3		; check for 3 neighbours
+	jne next
+
+	lda# 1		; set as alive
+	sta& ! nxt
+
+alive:	lda n_count
+	cma# 1		; test for 1 or less neighbours
+
+	jgt test_overcrowding
+	lda# 0
+	sta& ! nxt
+	jmp next
+	
+next:	inc j
+	lda j
+	cma ! m
+	jlt f_col
+
+	inc i
+	lda i
+	cma ! n
+	jlt f_row
+
+test_overcrowding:	cma# 4
+	jlt next
+	lda# 0
+	sta& ! nxt
+	jmp next
+
+row_end:	popf
+	rtn
+
+i:	.word 0
+j:	.word 0
+pos:	.word 0
+n_count:	.word 0
+

@@ -1,0 +1,46 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	stackstart, $030
+  3.              
+  4.              	.equ	enable_ints, $80		; enable interrupts
+  5.              	.equ	kbd_ctrl, $000
+  6.              	.equ	kbd_data, $001		; holds the characters you press on the keyboard
+  7.              
+  8.              	.equ	crt_data, $317		; display
+  9.              	.equ	zero, $30
+ 10.              	.equ	nine, $39
+ 11.              	
+ 12.  000 020030  	lds#	stackstart
+ 13.  001 000080  	lda#	enable_ints		; enable keyboard interrupts
+ 14.  002 712000  	outb	kbd_ctrl		; writes out a byte to the keyboard control register, takes the value $80 and enables the keyboard interrupts
+ 15.  003 FFF032  	sie			; enable all interrupts
+ 16.              
+ 17.  004 002007  loop:	lda	num_char
+ 18.  005 712317  	outb	crt_data
+ 19.  006 402004  	jmp	loop
+ 20.              
+ 21.  007 000030  num_char:	.word zero
+ 22.              
+ 23.  008 FFF010  kbd_int:	psha			; save register
+ 24.  009 702001  	inb	kbd_data		; read the character that was just pressed, clear the interrupt bit
+ 25.  00A 002007  	lda	num_char
+ 26.  00B 200039  	cma#	nine
+ 27.  00C 4B200F  	jge	reset
+ 28.  00D 1B2007  	inc	num_char
+ 29.  00E 402011  	jmp	return	
+ 30.              
+ 31.  00F 000030  reset:	lda#	zero
+ 32.  010 042007  	sta	num_char
+ 33.              
+ 34.  011 FFF013  return:	popa
+ 35.  012 FFF041  	irtn
+ 36.              
+ 37.              	.equ	@, $FF8		; address of keyboard isr
+ 38.  FF8 000008  	.word	kbd_int
+
+                     SYMBOL TABLE CONTENTS
+
+000317 = CRT_DATA        000080 = ENABLE_INTS     000000 = KBD_CTRL        
+000001 = KBD_DATA        000008 = KBD_INT         000004 = LOOP            
+000039 = NINE            000007 = NUM_CHAR        00000F = RESET           
+000011 = RETURN          000030 = STACKSTART      000030 = ZERO            

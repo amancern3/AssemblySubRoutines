@@ -1,0 +1,38 @@
+	.equ	@, $000
+	.equ	stackstart, $030
+
+	.equ	enable_ints, $80		; enable interrupts
+	.equ	kbd_ctrl, $000
+	.equ	kbd_data, $001		; holds the characters you press on the keyboard
+
+	.equ	crt_data, $317		; display
+	.equ	zero, $30
+	.equ	nine, $39
+	
+	lds#	stackstart
+	lda#	enable_ints		; enable keyboard interrupts
+	outb	kbd_ctrl		; writes out a byte to the keyboard control register, takes the value $80 and enables the keyboard interrupts
+	sie			; enable all interrupts
+
+loop:	lda	num_char
+	outb	crt_data
+	jmp	loop
+
+num_char:	.word zero
+
+kbd_int:	psha			; save register
+	inb	kbd_data		; read the character that was just pressed, clear the interrupt bit
+	lda	num_char
+	cma#	nine
+	jge	reset
+	inc	num_char
+	jmp	return	
+
+reset:	lda#	zero
+	sta	num_char
+
+return:	popa
+	irtn
+
+	.equ	@, $FF8		; address of keyboard isr
+	.word	kbd_int

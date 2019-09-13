@@ -1,24 +1,244 @@
 LINE ADDR CONTENTS SOURCE LINE
   1.              ; problem 5a
   2.              	.equ @, $000
-  3.              	.equ n, 6
-  4.              	.equ m, 7
+  3.              	.equ row, 6
+  4.              	.equ col, 7
   5.              	.equ stack, $002
   6.              
   7.  000 020002  main:	lds# stack
   8.  001 030000  	ldf# 0
   9.              	
- 10.  002 080006  	psh# prevgen
- 11.  003 080006  	psh# n
- 12.  004 080007  	psh# m
- 13.  005 080030  	psh# nextgen
- 14.  006 000000  prevgen:	.blkw n*m , 0 
- 15.  030 000000  nextgen:	.blkw n*m, 0
- 16.              
- 17.              	.equ @, $400
+ 10.  002 08000A  	psh# prevgen
+ 11.  003 080006  	psh# row
+ 12.  004 080007  	psh# col
+ 13.  005 080034  	psh# nxtgen
+ 14.  006 412400  	jsr nextGen
+ 15.  007 120004  	ads# 4
+ 16.              	
+ 17.  008 1B2009  	inc gen
  18.              	
+ 19.  009 000000  gen:	.word 0	
+ 20.  00A 000000  prevgen:	 .word 0
+ 21.  00B 000000  .word 0
+ 22.  00C 000000  .word 0
+ 23.  00D 000000  .word 0
+ 24.  00E 000000  .word 0
+ 25.  00F 000000  .word 0
+ 26.  010 000000  .word 0
+ 27.              
+ 28.  011 000000  .word 0
+ 29.  012 000000  .word 0
+ 30.  013 000001  .word 1
+ 31.  014 000000  .word 0
+ 32.  015 000000  .word 0
+ 33.  016 000000  .word 0
+ 34.  017 000000  .word 0
+ 35.              
+ 36.  018 000000  .word 0
+ 37.  019 000000  .word 0
+ 38.  01A 000000  .word 0
+ 39.  01B 000001  .word 1
+ 40.  01C 000000  .word 0
+ 41.  01D 000000  .word 0
+ 42.  01E 000000  .word 0
+ 43.              
+ 44.  01F 000000  .word 0
+ 45.  020 000001  .word 1
+ 46.  021 000001  .word 1
+ 47.  022 000001  .word 1
+ 48.  023 000001  .word 1
+ 49.  024 000000  .word 0
+ 50.  025 000000  .word 0
+ 51.              
+ 52.  026 000000  .word 0
+ 53.  027 000000  .word 0
+ 54.  028 000000  .word 0
+ 55.  029 000001  .word 1
+ 56.  02A 000000  .word 0
+ 57.  02B 000000  .word 0
+ 58.  02C 000000  .word 0
+ 59.              
+ 60.  02D 000000  .word 0
+ 61.  02E 000000  .word 0
+ 62.  02F 000000  .word 0
+ 63.  030 000000  .word 0
+ 64.  031 000000  .word 0
+ 65.  032 000000  .word 0
+ 66.  033 000000  .word 0
+ 67.              
+ 68.  034 000000  nxtgen:	.blkw row*col, 0
+ 69.              
+ 70.              	.equ @, $400
+ 71.              	.equ nxt, 2
+ 72.              	.equ m, 3
+ 73.              	.equ n, 4
+ 74.              	.equ prv, 5
+ 75.              
+ 76.              ; flow of thinking 
+ 77.              ; on the current position, make sure to check every directional neighbour by 
+ 78.              ; implementing functions that perform the XR and positional manipulation, whilst keeping a count
+ 79.              ; of number of neighbours. 
+ 80.              ; Use Next function from prev assigments.
+ 81.  400 680000  nextGen:	bgn# 0
+ 82.  401 0A2470  	clr i
+ 83.              
+ 84.  402 0A2471  f_row:	clr j
+ 85.  403 0A2473  f_col:	clr n_count
+ 86.  404 002470  	lda i
+ 87.  405 213004  	cmx ! n
+ 88.  406 48246E  	jeq row_end
+ 89.  407 183003  	mul ! m
+ 90.  408 102471  	ada j
+ 91.  409 042472  	sta pos
+ 92.  40A 002470  	lda i
+ 93.  40B 200000  	cma# 0
+ 94.  40C 48242C  	jeq m_left	; does not work with m_right done first for some reason -- check bug
+ 95.              
+ 96.  40D 002471  t_left:	lda j
+ 97.  40E 200000  	cma# 0
+ 98.  40F 482416  	jeq t_mid
+ 99.              
+100.  410 012472  	ldx pos
+101.  411 153003  	sbx ! m	; top left position
+102.  412 150001  	sbx# 1
+103.  413 009005  	lda& ! prv
+104.  414 102473  	ada n_count
+105.  415 042473  	sta n_count
+106.              
+107.  416 012472  t_mid:	ldx pos
+108.  417 153003  	sbx ! m
+109.  418 009005  	lda& ! prv
+110.              	
+111.  419 102473  	ada n_count
+112.  41A 042473  	sta n_count
+113.              
+114.  41B 002471  t_right:	lda j
+115.  41C 203003  	cma ! m
+116.  41D 4B242C  	jge m_left	; if j >= m, skip and test midleft neighbour
+117.              
+118.  41E 012472  	ldx pos
+119.  41F 153003  	sbx ! m
+120.  420 110001  	adx# 1
+121.              
+122.  421 009005  	lda& ! prv
+123.  422 102473  	ada n_count
+124.  423 042473  	sta n_count
+125.              
+126.  424 002471  m_right:	lda j		; load j and compare max cols if greater than or ==, skip
+127.  425 203003  	cma ! m
+128.  426 4B2434  	jge down
+129.              
+130.  427 012472  	ldx pos
+131.  428 110001  	adx# 1
+132.  429 009005  	lda& ! prv
+133.  42A 200001  	cma# 1
+134.  42B 1B2473  	inc n_count
+135.              
+136.  42C 002471  m_left:	lda j		; load j and see if its at the leftmost border if so -- skipz`
+137.  42D 200000  	cma# 0
+138.  42E 482424  	jeq m_right
+139.              
+140.  42F 012472  	ldx pos
+141.  430 150001  	sbx# 1		; go left
+142.  431 009005  	lda& ! prv
+143.  432 102473  	ada n_count
+144.  433 042473  	sta n_count
+145.              
+146.  434 002470  down:	lda i
+147.  435 100001  	ada# 1	 	; row = row + 1
+148.  436 203004  	cma ! n
+149.  437 4B2450  	jge cell_update
+150.              
+151.  438 002471  d_right:	lda j
+152.  439 203003  	cma ! m
+153.  43A 4B2441  	jge d_mid	; experimental ===
+154.              
+155.  43B 012472  	ldx pos
+156.  43C 113003  	adx ! m
+157.  43D 110001  	adx# 1
+158.  43E 009005  	lda& ! prv
+159.  43F 102473  	ada n_count
+160.  440 042473  	sta n_count
+161.              
+162.  441 012472  d_mid:	ldx pos
+163.  442 113003  	adx ! m
+164.  443 150001  	sbx# 1
+165.              	
+166.  444 009005  	lda& ! prv
+167.  445 102473  	ada n_count
+168.  446 042473  	sta n_count	
+169.              
+170.  447 002471  d_left:	lda j 
+171.  448 200000  	cma# 0
+172.  449 482450  	jeq cell_update
+173.              	
+174.  44A 012472  	ldx pos
+175.  44B 113003  	adx ! m
+176.  44C 150001  	sbx# 1
+177.  44D 009005  	lda& ! prv
+178.  44E 102473  	ada n_count
+179.  44F 042473  	sta n_count
+180.              
+181.  450 012472  cell_update:	ldx pos
+182.              	
+183.  451 009005  	lda& ! prv
+184.  452 049002  	sta& ! nxt
+185.              
+186.  453 200000  	cma# 0
+187.  454 482456  	jeq dead
+188.  455 49245B  	jne alive
+189.              
+190.  456 002473  dead:	lda n_count
+191.  457 200003  	cma# 3		; check for 3 neighbours
+192.  458 492461  	jne next
+193.              
+194.  459 000001  	lda# 1		; set as alive
+195.  45A 049002  	sta& ! nxt
+196.              
+197.  45B 002473  alive:	lda n_count
+198.  45C 200001  	cma# 1		; test for 1 or less neighbours
+199.              
+200.  45D 4D2469  	jgt test_overcrowding
+201.  45E 000000  	lda# 0
+202.  45F 049002  	sta& ! nxt
+203.  460 402461  	jmp next
+204.              	
+205.  461 1B2471  next:	inc j
+206.  462 002471  	lda j
+207.  463 203003  	cma ! m
+208.  464 4A2403  	jlt f_col
+209.              
+210.  465 1B2470  	inc i
+211.  466 002470  	lda i
+212.  467 203004  	cma ! n
+213.  468 4A2402  	jlt f_row
+214.              
+215.  469 200004  test_overcrowding:	cma# 4
+216.  46A 4A2461  	jlt next
+217.  46B 000000  	lda# 0
+218.  46C 049002  	sta& ! nxt
+219.  46D 402461  	jmp next
+220.              
+221.  46E FFF015  row_end:	popf
+222.  46F FFF040  	rtn
+223.              
+224.  470 000000  i:	.word 0
+225.  471 000000  j:	.word 0
+226.  472 000000  pos:	.word 0
+227.  473 000000  n_count:	.word 0
+228.              
+229.              
 
                      SYMBOL TABLE CONTENTS
 
-000007 = M               000000 = MAIN            000006 = N               
-000030 = NEXTGEN         000006 = PREVGEN         000002 = STACK           
+00045B = ALIVE           000450 = CELL_UPDATE     000007 = COL             
+000456 = DEAD            000434 = DOWN            000447 = D_LEFT          
+000441 = D_MID           000438 = D_RIGHT         000403 = F_COL           
+000402 = F_ROW           000009 = GEN             000470 = I               
+000471 = J               000003 = M               000000 = MAIN            
+00042C = M_LEFT          000424 = M_RIGHT         000004 = N               
+000461 = NEXT            000400 = NEXTGEN         000002 = NXT             
+000034 = NXTGEN          000473 = N_COUNT         000472 = POS             
+00000A = PREVGEN         000005 = PRV             000006 = ROW             
+00046E = ROW_END         000002 = STACK           000469 = TEST_OVERCROWDING
+00040D = T_LEFT          000416 = T_MID           00041B = T_RIGHT         

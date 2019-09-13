@@ -1,0 +1,380 @@
+.EQU KEYB_VECTOR,$FF8 ; keyboard interrupt vector
+.EQU @,$000 ; main program start address
+main:
+LDS# $E00 ; initialize stack to $E00
+
+LDA# keyboardISR
+STA KEYB_VECTOR ; save isr routine address in vector
+
+CLR generation ; start in generation 0
+
+LDA# array1 ; save ptr to array 1 in variable
+STA arr1ptr
+LDA# array2 ; save ptr to array 2 in variable
+STA arr2ptr
+
+PSH# startlen ; length of string
+PSH# startmsg ; string to print
+JSR $E05 ; prints starting message
+ADS# 2 ; restore stack pointer
+JSR $E06 ; prints newline separation
+JSR $E06 ; prints newline separation
+
+; Print grid
+PSH arr1ptr ; address of array of current grid
+PSH rows ; number of rows
+PSH columns ; number of columns
+PSH generation
+JSR printGrid ; print grid
+ADS# 4 ; restore stack pointer
+start:
+PSH# prmlen ; length of string
+PSH# prompt ; string to print
+JSR $E05 ; prints prompt
+ADS# 2 ; restore stack pointer
+
+JSR $E01 ; read input
+STA ngen ; save input in ngen
+JSR $E06 ; prints newline separation
+
+CMA# 0
+JEQ exit
+generate:
+PSH arr1ptr ; address of array of current grid
+PSH rows ; number of rows
+PSH columns ; number of columns
+PSH arr2ptr ; address of array of new grid
+JSR nextGen ; calculate next grid
+ADS# 4 ; restore stack pointer
+
+INC generation
+
+; Print grid
+PSH arr2ptr ; address of array of current grid
+PSH rows ; number of rows
+PSH columns ; number of columns
+PSH generation
+JSR printGrid ; print grid
+ADS# 4 ; restore stack pointer
+
+; swap pointers
+LDA arr1ptr
+LDX arr2ptr
+STA arr2ptr
+STX arr1ptr
+
+CLR endwait ; clear keyboard wait flag
+LDA# $80 ; enable keyboard interrupts
+OUTB $0
+SIE ; enable interrupts
+LDA count ; set count for initializing timer
+OUTW $31
+LDA# $50 ; disable timer interrupt, clear ready bit, load and start timer
+OUTB $030
+waitTimer:
+INB $030 ; read status register
+AND# $80 ; see if count is complete
+JNE countdone ; if so, exit loop
+LDA endwait ; see if keyboard was pressed
+CMA# 1
+JNE waitTimer ; if not, keep waiting
+countdone:
+CIE ; disable interrupts
+
+DEC ngen ; decrement number of generations to print
+JNE generate ; repeat if not zero
+
+JMP start ; start over
+exit:
+PSH# endlen ; length of string
+PSH# endmsg ; string to print
+JSR $E05 ; prints end of program
+ADS# 2 ; restore stack pointer
+
+HLT ; terminate program
+
+; printGrid subroutine
+.EQU grid,5
+.EQU nr,4
+.EQU nc,3
+.EQU gen,2
+printGrid:
+PSHF ; push FP on stack
+TSF ; load stack pointer in FP
+
+PSH# genlen ; length of string
+PSH# genmsg ; string to print
+JSR $E05 ; prints generation
+ADS# 2 ; restore stack pointer
+LDA ! gen
+JSR $E00 ; prints the generation number
+
+LDX# 0 ; start at position 0 in array
+CLR Y ; initialize row index to zero
+forY:
+CLR X ; initialize column index to zero
+forX:
+LDA& ! grid ; load value from array
+
+CMA# 0 ; see if the cell was dead
+JEQ cell0
+cell1:
+LDA# '1' ; char to print
+JSR $E08 ; prints a star
+JMP advance
+cell0:
+LDA# '0' ; char to print
+JSR $E08 ; prints a dot
+advance:
+LDA# ' ' ; char to print
+JSR $E08 ; prints a space
+
+ADX# 1 ; increment array position
+
+INC X ; increment column index
+LDA X ; load index in ACC
+CMA ! nc ; compare with number of columns
+JLT forX ; if I < nColumns, continue loop
+
+JSR $E06 ; print carriage return
+
+INC Y ; increment row index
+LDA Y ; load index in ACC
+CMA ! nr ; compare with number of rows
+JLT forY ; if I < nRows, continue loop
+
+JSR $E06 ; print carriage return
+
+POPF ; restore FP from stack
+RTN ; return to caller
+
+; Keyboard Interrupt Service Routine
+keyboardISR:
+PSHA ; save A in stack
+INC endwait ; set endwait to 1 to terminate wait
+LDA# $40 ; disable keyboard interrupt and flush buffer
+OUTB $0
+POPA ; recover A
+IRTN
+
+; Variables used in main
+Y: .word 0 ; row index
+X: .word 0 ; column index
+PTR: .word 0
+generation: .word 0
+ngen: .word 0
+count: .word 1000000
+startmsg: .char 'Here is the starting grid:',startlen
+genmsg: .char 'Generation: ',genlen
+prompt: .char 'How many new generations would you like to print (enter 0 to end)?',prmlen
+endmsg: .char 'End of program.',endlen
+endwait: .word 0
+arr1ptr: .word 0
+arr2ptr: .word 0
+array1: .word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 1
+.word 0
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 0
+.word 1
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 1
+.word 1
+.word 1
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+.word 0
+
+array2: .blkw 42,0
+rows: .word 6
+columns: .word 7
+
+; NextGen subroutine
+.EQU @,$400 ; subroutine start address
+.EQU curGrid,5
+.EQU nRows,4
+.EQU nColumns,3
+.EQU nextGrid,2
+nextGen:
+PSHF ; push FP on stack
+TSF ; load stack pointer in FP
+
+CLR I ; initialize row index to zero
+forRow:
+CLR J ; initialize column index to zero
+forCol:
+LDA I ; load current row
+MUL ! nColumns ; multiply row by ncolumns
+ADA J ; add column to get position of current cell
+STA pos ; save position in pos
+
+CLR neighbors ; start with zero neighbors
+
+LDA I
+CMA# 0 ; see if row == 0
+JEQ midleft ; if so, test middle neighbors
+uptop:
+LDA J
+CMA# 0 ; see if col == 0
+JEQ upmiddle ; if so, test up middle neighbor
+
+LDX pos ; get position
+SBX ! nColumns ; subtract ncolumns to get position in previous row
+SBX# 1 ; subtract 1 to get position at top left
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+upmiddle:
+LDX pos ; get position
+SBX ! nColumns ; subtract ncolumns to get position in previous row
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+upright:
+LDA J
+CMA ! nColumns ; see if col >= n columns
+JGE midleft ; if so, test midleft neighbor
+
+LDX pos ; get position
+SBX ! nColumns ; subtract ncolumns to get position in previous row
+ADX# 1 ; get position at top right
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+midleft:
+LDA J
+CMA# 0 ; see if col == 0
+JEQ midright ; if so, test middle right neighbor
+
+LDX pos ; get position
+SBX# 1 ; get position at left
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+midright:
+LDA J
+CMA ! nColumns ; see if col >= n columns
+JGE down ; if so, test down neightbors
+
+LDX pos ; get position
+ADX# 1 ; get position at right
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+
+down:
+LDA I
+ADA# 1
+CMA ! nRows ; see if row + 1 >= n rows
+JGE updatecell ; if so, update cell
+
+dnleft:
+LDA J
+CMA# 0 ; see if col == 0
+JEQ dnmiddle ; if so, test down middle neighbor
+
+LDX pos ; get position
+ADX ! nColumns ; add ncolumns to get position in next row
+SBX# 1 ; subtract 1 to get position at down left
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+dnmiddle:
+LDX pos ; get position
+ADX ! nColumns ; add ncolumns to get position in next row
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+dnright:
+LDA J
+CMA ! nColumns ; see if col >= n columns
+JGE updatecell ; if so, update cell
+
+LDX pos ; get position
+ADX ! nColumns ; add ncolumns to get position in next row
+ADX# 1 ; get position at down right
+LDA& ! curGrid ; load value from array
+ADA neighbors ; add value to number of neighbors
+STA neighbors ; update number of neighbors
+
+updatecell:
+LDX pos ; get position
+LDA& ! curGrid ; load value from array
+STA& ! nextGrid ; copy cell to next grid
+
+CMA# 0 ; see if the cell was dead
+JEQ dead
+alive:
+LDA neighbors ; load number of neighbors of current cell
+CMA# 1 ; see if there are 1 or less neighbors
+JGT testoc ; if there are more than 1, test overcrowding
+LDA# 0 ; else, clear A to kill cell
+STA& ! nextGrid ; set cell as dead in next grid
+JMP next ; continue the loop
+testoc:
+CMA# 4 ; see if there are 4 or more neighbors
+JLT next ; if there are less than 4, go to next cell
+LDA# 0 ; else, clear A to kill cell
+STA& ! nextGrid ; set cell as dead in next grid
+JMP next ; continue the loop
+dead:
+LDA neighbors ; load number of neighbors of current cell
+CMA# 3 ; see if there are exactly 3 neighbors
+JNE next ; if there are not 3 neighbors, go to next cell
+LDA# 1 ; else, set A to make cell alive
+STA& ! nextGrid ; set cell as alive in next grid
+next:
+INC J ; increment column index
+LDA J ; load index in ACC
+CMA ! nColumns ; compare with number of columns
+JLT forCol ; if I < nColumns, continue loop
+
+INC I ; increment row index
+LDA I ; load index in ACC
+CMA ! nRows ; compare with number of rows
+JLT forRow ; if I < nRows, continue loop
+
+POPF ; restore FP from stack
+RTN ; return to caller
+
+; Variables for subroutine
+I: .word 0 ; row index
+J: .word 0 ; column index
+pos: .word 0 ; current position in array
+neighbors: .word 0 ; number of neighbors for a cell
+
+.END
