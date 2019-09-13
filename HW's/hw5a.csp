@@ -4,9 +4,30 @@
 	.equ col, 7
 	.equ stack, $002
 
-	.equ kbd_v,$ff8
-	.equ prt_str, $E05
-	.equ new_lne, $E06
+	.equ crt_vbuf, $100
+	.equ crt_cntl, $316
+	.equ crt_width, 38
+
+	.equ clear_screen, $01
+	
+	.equ get_num, $e01
+	.equ put_str, $e05
+	.equ put_nl, $e06
+
+	.equ kbd_cntl, $000 ; address of keyboard control register
+	.equ kbd_data, $001 ; address of keyboard data buffer
+
+	.equ tim_cntl, $30  ; address of timer control register
+	.equ tim_sta, $30   ; address of timer status register
+	.equ	tim_value, $31 ; address of timer value register
+
+; page 212
+	.equ	interrupt_ena, $80     ; set leftmost bit (bit 7) to 1 to enable int		
+	.equ	enable_reset_and_start, $d0  ; set these bits for timer at beginning
+	.equ	enable_and_reset, $c0 ; enable and reset timer after interrupt
+	.equ	stop, $20 ; stop timer	
+
+
 
 main:	lds# stack
 	ldf# 0
@@ -16,13 +37,25 @@ main:	lds# stack
 	lda# kbd_isr
 	sta kbd_v	; isr routine save 
 
-	psh# len
-	psh# msg1
-	jsr prt_str
+	psh# len	; print starting message - starting grid
+	psh# start_msg
+	jsr put_str
 	ads# 2
-	jsr new_lne
-	jsr new_lne
+	jsr put_nl	
 
+; printing 2-D grid onto the screen
+	psh# prevgen
+	psh# m
+	psh# n
+	psh# gen
+	jsr 
+
+	jsr get_num
+	sta no_gen
+	jsr put_nl
+	lda no_gen
+	cma# 0
+	jeq case0
 	psh# prevgen
 	psh# row
 	psh# col
@@ -31,7 +64,13 @@ main:	lds# stack
 	ads# 4
 	
 	inc gen
-	
+
+case0:	psh# end_msg_len
+	psh# end_msg
+	jsr put_str
+	ads# 2
+
+	hlt
 gen:	.word 0	
 prevgen:	 .word 0
 .word 0
